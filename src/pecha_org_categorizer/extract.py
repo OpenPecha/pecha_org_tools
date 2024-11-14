@@ -22,37 +22,36 @@ class Extractor:
         Read the xlsx file and extract the information
         """
         self.extracted_info = self.extract_xlsx(input_xlsx)
-
         all_category = []
         curr_category: List[Union[str, None]] = []
+
         for row_idx, row in enumerate(self.extracted_info):
-            data, col_idx = None, None
-
-            for col_idx, col in enumerate(row):
-                if col is not None:
-                    data = col
-                    col_idx = col_idx
+            # Find the first non-None value and its index
+            for col_idx, data in enumerate(row):
+                if data is not None:
                     break
-
-            if data is None or col_idx is None:
-                continue
+            else:
+                continue  # Skip rows with all None values
 
             curr_category_len = len(curr_category)
 
             if curr_category_len < col_idx:
                 raise ValueError(
-                    f"Data is not in the right format. Please check line number {row_idx} the xlsx file "
+                    f"Data is not in the right format. Please check line number {row_idx} in the xlsx file."
                 )
 
+            # Update or extend the current category list
             if curr_category_len == col_idx:
                 curr_category.append(data)
-
-            if curr_category_len > col_idx:
+            else:
                 curr_category[col_idx] = data
 
-            for i in range(col_idx + 1, curr_category_len):
-                curr_category[i] = None
+            # Set the trailing elements to None if needed
+            curr_category[col_idx + 1 :] = [None] * (  # noqa
+                curr_category_len - col_idx - 1
+            )
 
+            # Add non-empty elements to the result
             non_empty_curr_category = [x for x in curr_category if x is not None]
             all_category.append(non_empty_curr_category)
 
