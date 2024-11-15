@@ -74,3 +74,30 @@ def parse_category():
     assert main == "བཟང་སྤྱོད་སྨོན་ལམ།"
     assert desc == ""
     assert short_desc == ""
+
+
+def test_format_category():
+    extractor = CategoryExtractor()
+
+    input = ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་)"]
+    output = extractor.format_category(input)
+    assert output == [
+        {
+            "main": "ཁ་འདོན།",
+            "desc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "short_desc": "ཁ་འདོན་འགྲེལ་བཤད་",
+        }
+    ]
+
+    input = ["སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"]
+    output = extractor.format_category(input)
+    assert output == [
+        {"main": "སྨོན་ལམ།", "desc": "སྨོན་ལམ་འགྲེལ་བཤད་", "short_desc": ""}
+    ]
+
+    input = ["བཟང་སྤྱོད་སྨོན་ལམ།"]
+    output = extractor.format_category(input)
+    assert output == [{"main": "བཟང་སྤྱོད་སྨོན་ལམ།", "desc": "", "short_desc": ""}]
+
+
+test_format_category()

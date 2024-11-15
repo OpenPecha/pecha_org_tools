@@ -59,11 +59,17 @@ class CategoryExtractor:
 
         return all_category
 
-    def format_category(self, category: List[Union[str, None]]):
+    def format_category(self, input_category: List[str]):
         """
         Format the category list into a string
         """
-        pass
+        formatted_category = []
+        for category in input_category:
+            main_text, desc, short_desc = extract_description_from_text(category)
+            curr_category = {"main": main_text, "desc": desc, "short_desc": short_desc}
+            formatted_category.append(curr_category)
+
+        return formatted_category
 
 
 def extract_description_from_text(text: str):
