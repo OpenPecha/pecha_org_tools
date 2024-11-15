@@ -29,30 +29,37 @@ class CategoryExtractor:
         extracted_categories = []
         current_category: List[Union[str, None]] = []
 
-        for row_index, row in enumerate(self.rows_data):
+        extracted_en_categories = []
+        current_en_category: List[Union[str, None]] = []
+
+        for row in self.rows_data:
             # Find the first non-None value and its index
+            flag = False
             for col_index, cell_value in enumerate(row):
                 if cell_value is not None:
+                    flag = True
                     break
-            else:
-                continue  # Skip rows where all values are None
+            if not flag:
+                continue
 
             current_category_len = len(current_category)
             cell_value = cell_value.strip()
 
-            if current_category_len < col_index:
-                raise ValueError(
-                    f"Data is not in the expected format. Please check row number {row_index + 1} in the xlsx file."
-                )
+            en_cell_value = row[col_index + 1].strip()
 
             # Update or extend the current category hierarchy
             if current_category_len == col_index:
                 current_category.append(cell_value)
+                current_en_category.append(en_cell_value)
             else:
                 current_category[col_index] = cell_value
+                current_en_category[col_index] = en_cell_value
 
-            # Reset trailing elements to None if needed
+            # Reset trailing elements to None
             current_category[col_index + 1 :] = [None] * (  # noqa
+                current_category_len - col_index - 1
+            )
+            current_en_category[col_index + 1 :] = [None] * (  # noqa
                 current_category_len - col_index - 1
             )
 
@@ -62,7 +69,12 @@ class CategoryExtractor:
             ]
             extracted_categories.append(active_category)
 
-        return extracted_categories
+            active_en_category = [
+                category for category in current_en_category if category is not None
+            ]
+            extracted_en_categories.append(active_en_category)
+
+        return extracted_categories, extracted_en_categories
 
     def format_categories(self, category_hierarchy: List[str]):
         """
@@ -84,12 +96,19 @@ class CategoryExtractor:
         """
         Extract and format categories from the provided xlsx file.
         """
-        extracted_categories = self.extract_categories(file_path)
-        formatted_categories = []
+        extracted_categories, extracted_en_categories = self.extract_categories(
+            file_path
+        )
+        formatted_bo_categories = []
         for category_hierarchy in extracted_categories:
             formatted_category = self.format_categories(category_hierarchy)
-            formatted_categories.append(formatted_category)
-        return formatted_categories
+            formatted_bo_categories.append(formatted_category)
+
+        formatted_en_categories = []
+        for category_hierarchy in extracted_en_categories:
+            formatted_category = self.format_categories(category_hierarchy)
+            formatted_en_categories.append(formatted_category)
+        return formatted_bo_categories, formatted_en_categories
 
 
 def extract_text_details(text: str):
