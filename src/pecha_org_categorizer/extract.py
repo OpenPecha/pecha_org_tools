@@ -87,8 +87,8 @@ class CategoryExtractor:
         for bo_category_hierarchy, en_category_hierarchy in zip(
             self.bo_extracted_categories, self.en_extracted_categories
         ):
-            bo_formatted_category = format_categories(bo_category_hierarchy)
-            en_formatted_category = format_categories(en_category_hierarchy)
+            bo_formatted_category = format_categories(bo_category_hierarchy, "bo")
+            en_formatted_category = format_categories(en_category_hierarchy, "en")
 
             bo_formatted_categories.append(bo_formatted_category)
             en_formatted_categories.append(en_formatted_category)
@@ -102,8 +102,8 @@ class CategoryExtractor:
         Get the category hierarchy for a given category name.
         """
         assert "title" in pecha_metadata
-        assert "desc" in pecha_metadata
-        assert "short_desc" in pecha_metadata
+        assert "heDesc" in pecha_metadata or "enDesc" in pecha_metadata
+        assert "heShortDesc" in pecha_metadata or "enShortDesc" in pecha_metadata
 
         if lang == "bo":
             formatted_categories = self.bo_formatted_categories
@@ -124,13 +124,22 @@ class CategoryExtractor:
         if matched_category_hierarchy is None:
             raise ValueError(f"Category not found for {category_name}")
         else:
-            matched_category_hierarchy.append(
-                {
-                    "name": pecha_metadata["title"],
-                    "desc": pecha_metadata["desc"],
-                    "short_desc": pecha_metadata["short_desc"],
-                }
-            )
+            if lang == "bo":
+                matched_category_hierarchy.append(
+                    {
+                        "name": pecha_metadata["title"],
+                        "heDesc": pecha_metadata["heDesc"],
+                        "heShortDesc": pecha_metadata["heShortDesc"],
+                    }
+                )
+            else:
+                matched_category_hierarchy.append(
+                    {
+                        "name": pecha_metadata["title"],
+                        "enDesc": pecha_metadata["enDesc"],
+                        "enShortDesc": pecha_metadata["enShortDesc"],
+                    }
+                )
             return matched_category_hierarchy
 
 
@@ -150,18 +159,26 @@ def extract_text_details(text: str):
         return None, None, None
 
 
-def format_categories(category_hierarchy: List[str]):
+def format_categories(category_hierarchy: List[str], lang: str):
     """
     Format each category hierarchy into a structured format with main text and descriptions.
     """
     formatted_hierarchy = []
     for category in category_hierarchy:
         name, description, short_description = extract_text_details(category)
-        category_data = {
-            "name": name,
-            "desc": description,
-            "short_desc": short_description,
-        }
+        if lang == "bo":
+            category_data = {
+                "name": name,
+                "heDesc": description,
+                "heShortDesc": short_description,
+            }
+        else:
+            category_data = {
+                "name": name,
+                "enDesc": description,
+                "enShortDesc": short_description,
+            }
+
         formatted_hierarchy.append(category_data)
 
     return formatted_hierarchy

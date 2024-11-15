@@ -99,46 +99,46 @@ def test_extract_category():
 
 def parse_category():
     text = "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"
-    name, desc, short_desc = extract_text_details(text)
+    name, heDesc, heShortDesc = extract_text_details(text)
 
     assert name == "ཁ་འདོན།"
-    assert desc == "ཁ་འདོན་འགྲེལ་བཤད་"
-    assert short_desc == "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་"
+    assert heDesc == "ཁ་འདོན་འགྲེལ་བཤད་"
+    assert heShortDesc == "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་"
 
     text = "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"
-    name, desc, short_desc = extract_text_details(text)
+    name, heDesc, heShortDesc = extract_text_details(text)
     assert name == "སྨོན་ལམ།"
-    assert desc == "སྨོན་ལམ་འགྲེལ་བཤད་"
-    assert short_desc == ""
+    assert heDesc == "སྨོན་ལམ་འགྲེལ་བཤད་"
+    assert heShortDesc == ""
 
     text = "བཟང་སྤྱོད་སྨོན་ལམ།"
-    name, desc, short_desc = extract_text_details(text)
+    name, heDesc, heShortDesc = extract_text_details(text)
     assert name == "བཟང་སྤྱོད་སྨོན་ལམ།"
-    assert desc == ""
-    assert short_desc == ""
+    assert heDesc == ""
+    assert heShortDesc == ""
 
 
 def test_format_category():
 
     input = ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་)"]
-    output = format_categories(input)
+    output = format_categories(input, "bo")
     assert output == [
         {
             "name": "ཁ་འདོན།",
-            "desc": "ཁ་འདོན་འགྲེལ་བཤད་",
-            "short_desc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
         }
     ]
 
     input = ["སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"]
-    output = format_categories(input)
+    output = format_categories(input, "bo")
     assert output == [
-        {"name": "སྨོན་ལམ།", "desc": "སྨོན་ལམ་འགྲེལ་བཤད་", "short_desc": ""}
+        {"name": "སྨོན་ལམ།", "heDesc": "སྨོན་ལམ་འགྲེལ་བཤད་", "heShortDesc": ""}
     ]
 
     input = ["བཟང་སྤྱོད་སྨོན་ལམ།"]
-    output = format_categories(input)
-    assert output == [{"name": "བཟང་སྤྱོད་སྨོན་ལམ།", "desc": "", "short_desc": ""}]
+    output = format_categories(input, "bo")
+    assert output == [{"name": "བཟང་སྤྱོད་སྨོན་ལམ།", "heDesc": "", "heShortDesc": ""}]
 
     input = [
         "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
@@ -146,24 +146,24 @@ def test_format_category():
         "བཟང་སྤྱོད་སྨོན་ལམ།(བཟང་སྤྱོད་འགྲེལ་བཤད་)(བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་)",
         "འགྲེལ་བ།",
     ]
-    output = format_categories(input)
+    output = format_categories(input, "bo")
     assert output == [
         {
             "name": "ཁ་འདོན།",
-            "desc": "ཁ་འདོན་འགྲེལ་བཤད་",
-            "short_desc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
         {
             "name": "སྨོན་ལམ།",
-            "desc": "སྨོན་ལམ་འགྲེལ་བཤད་",
-            "short_desc": "སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            "heDesc": "སྨོན་ལམ་འགྲེལ་བཤད་",
+            "heShortDesc": "སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
         {
             "name": "བཟང་སྤྱོད་སྨོན་ལམ།",
-            "desc": "བཟང་སྤྱོད་འགྲེལ་བཤད་",
-            "short_desc": "བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            "heDesc": "བཟང་སྤྱོད་འགྲེལ་བཤད་",
+            "heShortDesc": "བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
-        {"name": "འགྲེལ་བ།", "desc": "", "short_desc": ""},
+        {"name": "འགྲེལ་བ།", "heDesc": "", "heShortDesc": ""},
     ]
 
 
@@ -176,41 +176,41 @@ def test_get_category_hierarchy():
     category_name = "ཁ་འདོན།"
     pecha_metadata = {
         "title": "སློབ་གྲྭ་ཁ་འདོན།",
-        "desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
-        "short_desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+        "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
     output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "bo")
     assert output == [
         {
             "name": "ཁ་འདོན།",
-            "desc": "ཁ་འདོན་འགྲེལ་བཤད་",
-            "short_desc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
         {
             "name": "སློབ་གྲྭ་ཁ་འདོན།",
-            "desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
-            "short_desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
     ]
 
     category_name = "Recitation"
     pecha_metadata = {
         "title": "School Recitation",
-        "desc": "School Recitation description",
-        "short_desc": "School Recitation Short description",
+        "enDesc": "School Recitation heDescription",
+        "enShortDesc": "School Recitation Short heDescription",
     }
 
     output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "en")
     assert output == [
         {
             "name": "Recitation",
-            "desc": "Explanation of Recitation",
-            "short_desc": "Brief Explanation of Recitation",
+            "enDesc": "Explanation of Recitation",
+            "enShortDesc": "Brief Explanation of Recitation",
         },
         {
             "name": "School Recitation",
-            "desc": "School Recitation description",
-            "short_desc": "School Recitation Short description",
+            "enDesc": "School Recitation heDescription",
+            "enShortDesc": "School Recitation Short heDescription",
         },
     ]
 
