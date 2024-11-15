@@ -35,6 +35,7 @@ class Extractor:
                 continue  # Skip rows with all None values
 
             curr_category_len = len(curr_category)
+            data = data.strip()
 
             if curr_category_len < col_idx:
                 raise ValueError(
