@@ -192,3 +192,27 @@ def test_get_category_hierarchy():
             "short_desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
     ]
+
+    category_name = "Recitation"
+    pecha_metadata = {
+        "title": "School Recitation",
+        "desc": "School Recitation description",
+        "short_desc": "School Recitation Short description",
+    }
+
+    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "en")
+    assert output == [
+        {
+            "name": "Recitation",
+            "desc": "Explanation of Recitation",
+            "short_desc": "Brief Explanation of Recitation",
+        },
+        {
+            "name": "School Recitation",
+            "desc": "School Recitation description",
+            "short_desc": "School Recitation Short description",
+        },
+    ]
+
+
+test_get_category_hierarchy()
