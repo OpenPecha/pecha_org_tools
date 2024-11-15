@@ -8,7 +8,7 @@ from openpyxl import load_workbook
 class CategoryExtractor:
     def __init__(self, input_file: Path):
         self.input_file = input_file
-        self.process_file()
+        self.bo_formatted_categories, self.en_formatted_categories = self.process_file()
 
     @staticmethod
     def read_xlsx_file(file_path: Path):
@@ -93,8 +93,7 @@ class CategoryExtractor:
             bo_formatted_categories.append(bo_formatted_category)
             en_formatted_categories.append(en_formatted_category)
 
-        self.bo_formatted_categories = bo_formatted_categories
-        self.en_formatted_categories = en_formatted_categories
+        return bo_formatted_categories, en_formatted_categories
 
 
 def extract_text_details(text: str):
