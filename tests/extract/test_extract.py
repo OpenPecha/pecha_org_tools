@@ -13,7 +13,7 @@ def test_extract_category():
 
     extractor = CategoryExtractor(input_xlsx)
     extractor.extract_categories()
-    assert extractor.extracted_bo_categories == [
+    assert extractor.bo_extracted_categories == [
         ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"],
         [
             "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
@@ -54,7 +54,7 @@ def test_extract_category():
             "འགྲེལ་བ།",
         ],
     ]
-    assert extractor.extracted_en_categories == [
+    assert extractor.en_extracted_categories == [
         ["Recitation (Explanation of Recitation)(Brief Explanation of Recitation)"],
         [
             "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",

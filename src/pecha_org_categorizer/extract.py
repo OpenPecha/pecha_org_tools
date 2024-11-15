@@ -30,7 +30,7 @@ class CategoryExtractor:
         extracted_categories = []
         current_category: List[Union[str, None]] = []
 
-        extracted_en_categories = []
+        en_extracted_categories = []
         current_en_category: List[Union[str, None]] = []
 
         for row in self.rows_data:
@@ -73,10 +73,10 @@ class CategoryExtractor:
             active_en_category = [
                 category for category in current_en_category if category is not None
             ]
-            extracted_en_categories.append(active_en_category)
+            en_extracted_categories.append(active_en_category)
 
-        self.extracted_bo_categories = extracted_categories
-        self.extracted_en_categories = extracted_en_categories
+        self.bo_extracted_categories = extracted_categories
+        self.en_extracted_categories = en_extracted_categories
 
     def process_file(self):
         """
@@ -85,13 +85,16 @@ class CategoryExtractor:
         self.extract_categories()
         bo_formatted_categories, en_formatted_categories = [], []
         for bo_category_hierarchy, en_category_hierarchy in zip(
-            self.extracted_bo_categories, self.extracted_en_categories
+            self.bo_extracted_categories, self.en_extracted_categories
         ):
             bo_formatted_category = format_categories(bo_category_hierarchy)
             en_formatted_category = format_categories(en_category_hierarchy)
 
             bo_formatted_categories.append(bo_formatted_category)
             en_formatted_categories.append(en_formatted_category)
+
+        self.bo_formatted_categories = bo_formatted_categories
+        self.en_formatted_categories = en_formatted_categories
 
 
 def extract_text_details(text: str):
