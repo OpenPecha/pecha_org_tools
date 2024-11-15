@@ -95,6 +95,44 @@ class CategoryExtractor:
 
         return bo_formatted_categories, en_formatted_categories
 
+    def get_category_hierarchy(
+        self, category_name: str, pecha_metadata: dict, lang: str
+    ):
+        """
+        Get the category hierarchy for a given category name.
+        """
+        assert "title" in pecha_metadata
+        assert "desc" in pecha_metadata
+        assert "short_desc" in pecha_metadata
+
+        if lang == "bo":
+            formatted_categories = self.bo_formatted_categories
+        elif lang == "en":
+            formatted_categories = self.en_formatted_categories
+        else:
+            raise ValueError(f"Unsupported language: {lang}")
+
+        matched_category_hierarchy = None
+        for category_hierarchy in formatted_categories:
+            for category in category_hierarchy:
+                if category["name"] == category_name:
+                    matched_category_hierarchy = category_hierarchy
+                    break
+            if matched_category_hierarchy:
+                break
+
+        if matched_category_hierarchy is None:
+            raise ValueError(f"Category not found for {category_name}")
+        else:
+            matched_category_hierarchy.append(
+                {
+                    "name": pecha_metadata["title"],
+                    "desc": pecha_metadata["desc"],
+                    "short_desc": pecha_metadata["short_desc"],
+                }
+            )
+            return matched_category_hierarchy
+
 
 def extract_text_details(text: str):
     """

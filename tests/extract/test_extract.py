@@ -165,3 +165,30 @@ def test_format_category():
         },
         {"name": "འགྲེལ་བ།", "desc": "", "short_desc": ""},
     ]
+
+
+def test_get_category_hierarchy():
+    DATA_DIR = Path(__file__).parent / "data"
+    input_xlsx = DATA_DIR / "input.xlsx"
+
+    categorizer = CategoryExtractor(input_xlsx)
+
+    category_name = "ཁ་འདོན།"
+    pecha_metadata = {
+        "title": "སློབ་གྲྭ་ཁ་འདོན།",
+        "desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+        "short_desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+    }
+    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "bo")
+    assert output == [
+        {
+            "name": "ཁ་འདོན།",
+            "desc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "short_desc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+        {
+            "name": "སློབ་གྲྭ་ཁ་འདོན།",
+            "desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+            "short_desc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+    ]
