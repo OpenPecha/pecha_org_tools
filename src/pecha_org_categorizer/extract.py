@@ -7,99 +7,102 @@ from openpyxl import load_workbook
 
 class CategoryExtractor:
     def __init__(self):
-        self.extracted_info = []
+        self.rows_data = []
 
     @staticmethod
-    def extract_xlsx(input_xlsx: Path):
-        wb = load_workbook(input_xlsx)
-        ws = wb.active
-        extracted_info = []
-        for row in ws.iter_rows(values_only=True):
-            extracted_info.append(row)
-        return extracted_info
-
-    def extract(self, input_xlsx: Path):
+    def read_xlsx_file(file_path: Path):
         """
-        Read the xlsx file and extract the information
+        Read the xlsx file and return its contents as a list of rows.
         """
-        self.extracted_info = self.extract_xlsx(input_xlsx)
-        all_category = []
-        curr_category: List[Union[str, None]] = []
+        workbook = load_workbook(file_path)
+        worksheet = workbook.active
+        rows_data = []
+        for row in worksheet.iter_rows(values_only=True):
+            rows_data.append(row)
+        return rows_data
 
-        for row_idx, row in enumerate(self.extracted_info):
+    def extract_categories(self, file_path: Path):
+        """
+        Process the xlsx file and extract hierarchical categories from its contents.
+        """
+        self.rows_data = self.read_xlsx_file(file_path)
+        extracted_categories = []
+        current_category: List[Union[str, None]] = []
+
+        for row_index, row in enumerate(self.rows_data):
             # Find the first non-None value and its index
-            for col_idx, data in enumerate(row):
-                if data is not None:
+            for col_index, cell_value in enumerate(row):
+                if cell_value is not None:
                     break
             else:
-                continue  # Skip rows with all None values
+                continue  # Skip rows where all values are None
 
-            curr_category_len = len(curr_category)
-            data = data.strip()
+            current_category_len = len(current_category)
+            cell_value = cell_value.strip()
 
-            if curr_category_len < col_idx:
+            if current_category_len < col_index:
                 raise ValueError(
-                    f"Data is not in the right format. Please check line number {row_idx} in the xlsx file."
+                    f"Data is not in the expected format. Please check row number {row_index + 1} in the xlsx file."
                 )
 
-            # Update or extend the current category list
-            if curr_category_len == col_idx:
-                curr_category.append(data)
+            # Update or extend the current category hierarchy
+            if current_category_len == col_index:
+                current_category.append(cell_value)
             else:
-                curr_category[col_idx] = data
+                current_category[col_index] = cell_value
 
-            # Set the trailing elements to None if needed
-            curr_category[col_idx + 1 :] = [None] * (  # noqa
-                curr_category_len - col_idx - 1
+            # Reset trailing elements to None if needed
+            current_category[col_index + 1 :] = [None] * (  # noqa
+                current_category_len - col_index - 1
             )
 
             # Add non-empty elements to the result
-            non_empty_curr_category = [x for x in curr_category if x is not None]
-            all_category.append(non_empty_curr_category)
+            active_category = [
+                category for category in current_category if category is not None
+            ]
+            extracted_categories.append(active_category)
 
-        return all_category
+        return extracted_categories
 
-    def format_category(self, input_category: List[str]):
+    def format_categories(self, category_hierarchy: List[str]):
         """
-        Format the category list into a string
+        Format each category hierarchy into a structured format with main text and descriptions.
         """
-        formatted_category = []
-        for category in input_category:
-            main_text, desc, short_desc = extract_description_from_text(category)
-            curr_category = {"main": main_text, "desc": desc, "short_desc": short_desc}
-            formatted_category.append(curr_category)
+        formatted_hierarchy = []
+        for category in category_hierarchy:
+            name, description, short_description = extract_text_details(category)
+            category_data = {
+                "name": name,
+                "desc": description,
+                "short_desc": short_description,
+            }
+            formatted_hierarchy.append(category_data)
 
-        return formatted_category
+        return formatted_hierarchy
 
-    def get_category(self, input_xlsx: Path):
+    def process_file(self, file_path: Path):
         """
-        Extract the category from the xlsx file
+        Extract and format categories from the provided xlsx file.
         """
-        extracted_info = self.extract(input_xlsx)
+        extracted_categories = self.extract_categories(file_path)
         formatted_categories = []
-        for info in extracted_info:
-            formatted_category = self.format_category(info)
+        for category_hierarchy in extracted_categories:
+            formatted_category = self.format_categories(category_hierarchy)
             formatted_categories.append(formatted_category)
         return formatted_categories
 
 
-def extract_description_from_text(text: str):
-    # Regular expression to capture the main text and the content inside parentheses
+def extract_text_details(text: str):
+    """
+    Extract the main text and any descriptions (in parentheses) from a given string.
+    """
     pattern = r"^(.*?)\s*(?:\((.*?)\))?(?:\((.*?)\))?$"
-
-    # Search for matches
     match = re.search(pattern, text)
 
     if match:
-        # main_text is the part outside parentheses
-        main_text = match.group(1).strip() if match.group(1) else ""
-
-        # first_group is the content in the first pair of parentheses
-        first_group = match.group(2).strip() if match.group(2) else ""
-
-        # second_group is the content in the second pair of parentheses
-        second_group = match.group(3).strip() if match.group(3) else ""
-
-        return main_text, first_group, second_group
+        name = match.group(1).strip() if match.group(1) else ""
+        description = match.group(2).strip() if match.group(2) else ""
+        short_description = match.group(3).strip() if match.group(3) else ""
+        return name, description, short_description
     else:
         return None, None, None
