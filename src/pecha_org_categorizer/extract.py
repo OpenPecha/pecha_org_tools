@@ -5,7 +5,7 @@ from typing import List, Union
 from openpyxl import load_workbook
 
 
-class Extractor:
+class CategoryExtractor:
     def __init__(self):
         self.extracted_info = []
 
@@ -58,6 +58,12 @@ class Extractor:
             all_category.append(non_empty_curr_category)
 
         return all_category
+
+    def format_category(self, category: List[Union[str, None]]):
+        """
+        Format the category list into a string
+        """
+        pass
 
 
 def extract_description_from_text(text: str):

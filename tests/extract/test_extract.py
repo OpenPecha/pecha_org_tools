@@ -1,13 +1,16 @@
 from pathlib import Path
 
-from pecha_org_categorizer.extract import Extractor, extract_description_from_text
+from pecha_org_categorizer.extract import (
+    CategoryExtractor,
+    extract_description_from_text,
+)
 
 
 def test_extract_category():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
-    extractor = Extractor()
+    extractor = CategoryExtractor()
     extracted_info = extractor.extract(input_xlsx)
     assert extracted_info == [
         ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"],
