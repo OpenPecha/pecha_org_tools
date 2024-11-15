@@ -7,22 +7,18 @@
 
 <!-- Replace with 1-sentence description about what this tool is or does.-->
 
-<h3 align="center">Use this repo template for all new Python projects.</h3>
+<h3 align="center">Pecha.org Categorizer</h3>
 
 ## Description
 
-Project description goes here.
+A python package to get category for a particular pecha.
+
 
 ## Project owner(s)
 
 <!-- Link to the repo owners' github profiles -->
 
-- [@10zinten](https://github.com/10zinten)
-- [@evanyerburgh](https://github.com/evanyerburgh)
-
-## Integrations
-
-<!-- Add any intregrations here or delete `- []()` and write None-->
+- [@tenzin3](https://github.com/tenzin3)
 
 None
 ## Docs

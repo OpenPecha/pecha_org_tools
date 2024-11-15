@@ -17,6 +17,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+dependencies = [
+  "openpyxl >= 3.1.5",
+]
+
 [project.optional-dependencies]
 dev = [
     "pytest",
