@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import List, Union
 
@@ -56,3 +57,25 @@ class Extractor:
             all_category.append(non_empty_curr_category)
 
         return all_category
+
+
+def extract_description_from_text(text: str):
+    # Regular expression to capture the main text and the content inside parentheses
+    pattern = r"^(.*?)\s*(?:\((.*?)\))?(?:\((.*?)\))?$"
+
+    # Search for matches
+    match = re.search(pattern, text)
+
+    if match:
+        # main_text is the part outside parentheses
+        main_text = match.group(1).strip() if match.group(1) else ""
+
+        # first_group is the content in the first pair of parentheses
+        first_group = match.group(2).strip() if match.group(2) else ""
+
+        # second_group is the content in the second pair of parentheses
+        second_group = match.group(3).strip() if match.group(3) else ""
+
+        return main_text, first_group, second_group
+    else:
+        return None, None, None
