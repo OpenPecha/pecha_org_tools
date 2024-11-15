@@ -54,9 +54,47 @@ def test_extract_category():
             "འགྲེལ་བ།",
         ],
     ]
-
-
-test_extract_category()
+    assert extractor.extracted_en_categories == [
+        ["Recitation (Explanation of Recitation)(Brief Explanation of Recitation)"],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Actions",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Actions",
+            "Root Text",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Actions",
+            "Commentary Text",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Conduct (Explanation of Good Conduct)(Brief Explanation of Good Conduct)",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Conduct (Explanation of Good Conduct)(Brief Explanation of Good Conduct)",
+            "Root Text",
+        ],
+        [
+            "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+            "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+            "The Prayer of Good Conduct (Explanation of Good Conduct)(Brief Explanation of Good Conduct)",
+            "Commentary Text",
+        ],
+    ]
 
 
 def parse_category():
