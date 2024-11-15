@@ -71,6 +71,14 @@ class CategoryExtractor:
 
         return formatted_category
 
+    def get_category(self, input_xlsx: Path):
+        """
+        Extract the category from the xlsx file
+        """
+        extracted_info = self.extract(input_xlsx)
+        formatted_category = self.format_category(extracted_info)
+        return formatted_category
+
 
 def extract_description_from_text(text: str):
     # Regular expression to capture the main text and the content inside parentheses
