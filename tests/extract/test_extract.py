@@ -1,15 +1,19 @@
 from pathlib import Path
 
-from pecha_org_categorizer.extract import CategoryExtractor, extract_text_details
+from pecha_org_categorizer.extract import (
+    CategoryExtractor,
+    extract_text_details,
+    format_categories,
+)
 
 
 def test_extract_category():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
-    extractor = CategoryExtractor()
-    extracted_info = extractor.extract_categories(input_xlsx)
-    assert extracted_info == [
+    extractor = CategoryExtractor(input_xlsx)
+    extractor.extract_categories()
+    assert extractor.extracted_bo_categories == [
         ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"],
         [
             "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
@@ -18,18 +22,18 @@ def test_extract_category():
         [
             "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
             "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)(སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
-            "ཀུན་བཟང་སྨོན་ལམ།(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་)(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
+            "ཀུན་བཟང་སྨོན་ལམ།",
         ],
         [
             "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
             "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)(སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
-            "ཀུན་བཟང་སྨོན་ལམ།(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་)(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
+            "ཀུན་བཟང་སྨོན་ལམ།",
             "རྩ་བ།",
         ],
         [
             "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
             "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)(སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
-            "ཀུན་བཟང་སྨོན་ལམ།(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་)(ཀུན་བཟང་སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
+            "ཀུན་བཟང་སྨོན་ལམ།",
             "འགྲེལ་བ།",
         ],
         [
@@ -50,6 +54,9 @@ def test_extract_category():
             "འགྲེལ་བ།",
         ],
     ]
+
+
+test_extract_category()
 
 
 def parse_category():
@@ -74,10 +81,9 @@ def parse_category():
 
 
 def test_format_category():
-    extractor = CategoryExtractor()
 
     input = ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་)"]
-    output = extractor.format_categories(input)
+    output = format_categories(input)
     assert output == [
         {
             "name": "ཁ་འདོན།",
@@ -87,13 +93,13 @@ def test_format_category():
     ]
 
     input = ["སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"]
-    output = extractor.format_categories(input)
+    output = format_categories(input)
     assert output == [
         {"name": "སྨོན་ལམ།", "desc": "སྨོན་ལམ་འགྲེལ་བཤད་", "short_desc": ""}
     ]
 
     input = ["བཟང་སྤྱོད་སྨོན་ལམ།"]
-    output = extractor.format_categories(input)
+    output = format_categories(input)
     assert output == [{"name": "བཟང་སྤྱོད་སྨོན་ལམ།", "desc": "", "short_desc": ""}]
 
     input = [
@@ -102,7 +108,7 @@ def test_format_category():
         "བཟང་སྤྱོད་སྨོན་ལམ།(བཟང་སྤྱོད་འགྲེལ་བཤད་)(བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་)",
         "འགྲེལ་བ།",
     ]
-    output = extractor.format_categories(input)
+    output = format_categories(input)
     assert output == [
         {
             "name": "ཁ་འདོན།",
@@ -121,6 +127,3 @@ def test_format_category():
         },
         {"name": "འགྲེལ་བ།", "desc": "", "short_desc": ""},
     ]
-
-
-test_format_category()

@@ -6,8 +6,9 @@ from openpyxl import load_workbook
 
 
 class CategoryExtractor:
-    def __init__(self):
-        self.rows_data = []
+    def __init__(self, input_file: Path):
+        self.input_file = input_file
+        self.process_file()
 
     @staticmethod
     def read_xlsx_file(file_path: Path):
@@ -21,11 +22,11 @@ class CategoryExtractor:
             rows_data.append(row)
         return rows_data
 
-    def extract_categories(self, file_path: Path):
+    def extract_categories(self):
         """
         Process the xlsx file and extract hierarchical categories from its contents.
         """
-        self.rows_data = self.read_xlsx_file(file_path)
+        self.rows_data = self.read_xlsx_file(self.input_file)
         extracted_categories = []
         current_category: List[Union[str, None]] = []
 
@@ -74,41 +75,23 @@ class CategoryExtractor:
             ]
             extracted_en_categories.append(active_en_category)
 
-        return extracted_categories, extracted_en_categories
+        self.extracted_bo_categories = extracted_categories
+        self.extracted_en_categories = extracted_en_categories
 
-    def format_categories(self, category_hierarchy: List[str]):
-        """
-        Format each category hierarchy into a structured format with main text and descriptions.
-        """
-        formatted_hierarchy = []
-        for category in category_hierarchy:
-            name, description, short_description = extract_text_details(category)
-            category_data = {
-                "name": name,
-                "desc": description,
-                "short_desc": short_description,
-            }
-            formatted_hierarchy.append(category_data)
-
-        return formatted_hierarchy
-
-    def process_file(self, file_path: Path):
+    def process_file(self):
         """
         Extract and format categories from the provided xlsx file.
         """
-        extracted_categories, extracted_en_categories = self.extract_categories(
-            file_path
-        )
-        formatted_bo_categories = []
-        for category_hierarchy in extracted_categories:
-            formatted_category = self.format_categories(category_hierarchy)
-            formatted_bo_categories.append(formatted_category)
+        self.extract_categories()
+        bo_formatted_categories, en_formatted_categories = [], []
+        for bo_category_hierarchy, en_category_hierarchy in zip(
+            self.extracted_bo_categories, self.extracted_en_categories
+        ):
+            bo_formatted_category = format_categories(bo_category_hierarchy)
+            en_formatted_category = format_categories(en_category_hierarchy)
 
-        formatted_en_categories = []
-        for category_hierarchy in extracted_en_categories:
-            formatted_category = self.format_categories(category_hierarchy)
-            formatted_en_categories.append(formatted_category)
-        return formatted_bo_categories, formatted_en_categories
+            bo_formatted_categories.append(bo_formatted_category)
+            en_formatted_categories.append(en_formatted_category)
 
 
 def extract_text_details(text: str):
@@ -125,3 +108,20 @@ def extract_text_details(text: str):
         return name, description, short_description
     else:
         return None, None, None
+
+
+def format_categories(category_hierarchy: List[str]):
+    """
+    Format each category hierarchy into a structured format with main text and descriptions.
+    """
+    formatted_hierarchy = []
+    for category in category_hierarchy:
+        name, description, short_description = extract_text_details(category)
+        category_data = {
+            "name": name,
+            "desc": description,
+            "short_desc": short_description,
+        }
+        formatted_hierarchy.append(category_data)
+
+    return formatted_hierarchy
