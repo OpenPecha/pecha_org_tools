@@ -76,8 +76,11 @@ class CategoryExtractor:
         Extract the category from the xlsx file
         """
         extracted_info = self.extract(input_xlsx)
-        formatted_category = self.format_category(extracted_info)
-        return formatted_category
+        formatted_categories = []
+        for info in extracted_info:
+            formatted_category = self.format_category(info)
+            formatted_categories.append(formatted_category)
+        return formatted_categories
 
 
 def extract_description_from_text(text: str):
