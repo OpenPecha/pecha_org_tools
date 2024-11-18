@@ -4,6 +4,8 @@ from typing import List, Union
 
 from openpyxl import load_workbook
 
+from pecha_org_categorizer.enums import TextType
+
 
 class CategoryExtractor:
     def __init__(self, input_file: Path):
@@ -96,7 +98,11 @@ class CategoryExtractor:
         return bo_formatted_categories, en_formatted_categories
 
     def get_category_hierarchy(
-        self, category_name: str, pecha_metadata: dict, lang: str
+        self,
+        category_name: str,
+        pecha_metadata: dict,
+        lang: str,
+        text_type: TextType = TextType.NONE,
     ):
         """
         Get the category hierarchy for a given category name.
@@ -123,24 +129,40 @@ class CategoryExtractor:
 
         if matched_category_hierarchy is None:
             raise ValueError(f"Category not found for {category_name}")
+
+        if lang == "bo":
+            if text_type == TextType.ROOT:
+                matched_category_hierarchy.append(
+                    {"name": "རྩ་བ།", "heDesc": "", "heShortDesc": ""}
+                )
+            elif text_type == TextType.COMMENTARY:
+                matched_category_hierarchy.append(
+                    {"name": "འགྲེལ་པ།", "heDesc": "", "heShortDesc": ""}
+                )
+            matched_category_hierarchy.append(
+                {
+                    "name": pecha_metadata["title"],
+                    "heDesc": pecha_metadata["heDesc"],
+                    "heShortDesc": pecha_metadata["heShortDesc"],
+                }
+            )
         else:
-            if lang == "bo":
+            if text_type == TextType.ROOT:
                 matched_category_hierarchy.append(
-                    {
-                        "name": pecha_metadata["title"],
-                        "heDesc": pecha_metadata["heDesc"],
-                        "heShortDesc": pecha_metadata["heShortDesc"],
-                    }
+                    {"name": "Root text", "enDesc": "", "enShortDesc": ""}
                 )
-            else:
+            elif text_type == TextType.COMMENTARY:
                 matched_category_hierarchy.append(
-                    {
-                        "name": pecha_metadata["title"],
-                        "enDesc": pecha_metadata["enDesc"],
-                        "enShortDesc": pecha_metadata["enShortDesc"],
-                    }
+                    {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
                 )
-            return matched_category_hierarchy
+            matched_category_hierarchy.append(
+                {
+                    "name": pecha_metadata["title"],
+                    "enDesc": pecha_metadata["enDesc"],
+                    "enShortDesc": pecha_metadata["enShortDesc"],
+                }
+            )
+        return matched_category_hierarchy
 
 
 def extract_text_details(text: str):
