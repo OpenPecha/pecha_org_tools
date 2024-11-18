@@ -4,11 +4,12 @@ from typing import List, Union
 
 from openpyxl import load_workbook
 
+from pecha_org_categorizer.config import PECHA_CATEGORIES_FILE
 from pecha_org_categorizer.enums import TextType
 
 
 class CategoryExtractor:
-    def __init__(self, input_file: Path):
+    def __init__(self, input_file: Path = PECHA_CATEGORIES_FILE):
         self.input_file = input_file
         self.bo_formatted_categories, self.en_formatted_categories = self.process_file()
 
