@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pecha_org_categorizer.enums import TextType
 from pecha_org_categorizer.extract import (
     CategoryExtractor,
     extract_text_details,
@@ -193,6 +194,33 @@ def test_get_category_hierarchy():
         },
     ]
 
+    categorizer = CategoryExtractor(input_xlsx)
+
+    category_name = "ཁ་འདོན།"
+    pecha_metadata = {
+        "title": "སློབ་གྲྭ་ཁ་འདོན།",
+        "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+        "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+    }
+    output = categorizer.get_category_hierarchy(
+        category_name, pecha_metadata, "bo", TextType.ROOT
+    )
+    assert output == [
+        {
+            "name": "ཁ་འདོན།",
+            "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+        {"name": "རྩ་བ།", "heDesc": "", "heShortDesc": ""},
+        {
+            "name": "སློབ་གྲྭ་ཁ་འདོན།",
+            "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+    ]
+
+    categorizer = CategoryExtractor(input_xlsx)
+
     category_name = "Recitation"
     pecha_metadata = {
         "title": "School Recitation",
@@ -207,6 +235,31 @@ def test_get_category_hierarchy():
             "enDesc": "Explanation of Recitation",
             "enShortDesc": "Brief Explanation of Recitation",
         },
+        {
+            "name": "School Recitation",
+            "enDesc": "School Recitation heDescription",
+            "enShortDesc": "School Recitation Short heDescription",
+        },
+    ]
+
+    categorizer = CategoryExtractor(input_xlsx)
+    category_name = "Recitation"
+    pecha_metadata = {
+        "title": "School Recitation",
+        "enDesc": "School Recitation heDescription",
+        "enShortDesc": "School Recitation Short heDescription",
+    }
+
+    output = categorizer.get_category_hierarchy(
+        category_name, pecha_metadata, "en", TextType.COMMENTARY
+    )
+    assert output == [
+        {
+            "name": "Recitation",
+            "enDesc": "Explanation of Recitation",
+            "enShortDesc": "Brief Explanation of Recitation",
+        },
+        {"name": "Commentaries", "enDesc": "", "enShortDesc": ""},
         {
             "name": "School Recitation",
             "enDesc": "School Recitation heDescription",
