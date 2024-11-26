@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "pecha_org_tools"
 version = "0.0.1"
 authors = [
-  { name="OpenPecha", email="tsundue@esukhia.org, tashitsering@esukhia.org" },
+    { name = "Tsundue", email = "tsundue@esukhia.org" },
+    { name = "Tashi Tsering", email = "tashitsering@esukhia.org" }
 ]
 description = "A package to help with data preparation for pecha.org"
 readme = "README.md"
