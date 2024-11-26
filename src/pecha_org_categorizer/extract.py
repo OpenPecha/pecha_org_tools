@@ -239,7 +239,7 @@ def format_categories(category_hierarchy: List[str], lang: str):
     """
     Format each category hierarchy into a structured format with main text and descriptions.
     """
-    formatted_hierarchy = []
+    formatted_category = []
     for category in category_hierarchy:
         name, description, short_description = parse_category_text(category)
         if lang == "bo":
@@ -255,6 +255,6 @@ def format_categories(category_hierarchy: List[str], lang: str):
                 "enShortDesc": short_description,
             }
 
-        formatted_hierarchy.append(category_data)
+        formatted_category.append(category_data)
 
-    return formatted_hierarchy
+    return formatted_category
