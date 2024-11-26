@@ -12,7 +12,7 @@ class CategoryExtractor:
     def __init__(self, input_file: Optional[Path] = None):
         input_file = input_file or Path(download_spreedsheet())
         self.input_file = input_file
-        self.bo_formatted_categories, self.en_formatted_categories = self.process_file()
+        self.bo_categories, self.en_categories = self.process_file()
 
     @staticmethod
     def read_xlsx_file(file_path: Path):
@@ -83,17 +83,17 @@ class CategoryExtractor:
         Extract and format categories from the provided xlsx file.
         """
         self.extract_categories()
-        bo_formatted_categories, en_formatted_categories = [], []
+        bo_categories, en_categories = [], []
         for bo_category_hierarchy, en_category_hierarchy in zip(
             self.bo_extracted_categories, self.en_extracted_categories
         ):
             bo_formatted_category = format_categories(bo_category_hierarchy, "bo")
             en_formatted_category = format_categories(en_category_hierarchy, "en")
 
-            bo_formatted_categories.append(bo_formatted_category)
-            en_formatted_categories.append(en_formatted_category)
+            bo_categories.append(bo_formatted_category)
+            en_categories.append(en_formatted_category)
 
-        return bo_formatted_categories, en_formatted_categories
+        return bo_categories, en_categories
 
     def get_category(
         self,
@@ -124,16 +124,16 @@ class CategoryExtractor:
             category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
         )
 
-        bo_formatted_categories = self.bo_formatted_categories
-        en_formatted_categories = self.en_formatted_categories
+        bo_categories = self.bo_categories
+        en_categories = self.en_categories
 
         matched_idx = None
-        for idx, category_hierarchy in enumerate(bo_formatted_categories):
+        for idx, category_hierarchy in enumerate(bo_categories):
             if category_hierarchy == bo_category:
                 matched_idx = idx
                 break
 
-        matched_category = en_formatted_categories[matched_idx]
+        matched_category = en_categories[matched_idx]
         if text_type == TextType.ROOT:
             matched_category.append(
                 {"name": "Root text", "enDesc": "", "enShortDesc": ""}
@@ -166,9 +166,9 @@ class CategoryExtractor:
         assert "heShortDesc" in pecha_metadata or "enShortDesc" in pecha_metadata
 
         if lang == "bo":
-            formatted_categories = self.bo_formatted_categories
+            formatted_categories = self.bo_categories
         elif lang == "en":
-            formatted_categories = self.en_formatted_categories
+            formatted_categories = self.en_categories
         else:
             raise ValueError(f"Unsupported language: {lang}")
 
