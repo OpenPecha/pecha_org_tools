@@ -31,11 +31,11 @@ class CategoryExtractor:
         Process the xlsx file and extract hierarchical categories from its contents.
         """
         self.rows_data = self.read_xlsx_file(self.input_file)
-        extracted_categories = []
-        current_category: List[Union[str, None]] = []
+        bo_categories = []
+        cur_bo_cat: List[Union[str, None]] = []
 
-        en_extracted_categories = []
-        current_en_category: List[Union[str, None]] = []
+        en_categories = []
+        cur_en_cat: List[Union[str, None]] = []
 
         for row in self.rows_data:
             # Find the first non-None value and its index
@@ -47,40 +47,36 @@ class CategoryExtractor:
             if not flag:
                 continue
 
-            current_category_len = len(current_category)
+            cur_cat_len = len(cur_bo_cat)
             cell_value = cell_value.strip()
 
             en_cell_value = row[col_index + 1].strip()
 
             # Update or extend the current category hierarchy
-            if current_category_len == col_index:
-                current_category.append(cell_value)
-                current_en_category.append(en_cell_value)
+            if cur_cat_len == col_index:
+                cur_bo_cat.append(cell_value)
+                cur_en_cat.append(en_cell_value)
             else:
-                current_category[col_index] = cell_value
-                current_en_category[col_index] = en_cell_value
+                cur_bo_cat[col_index] = cell_value
+                cur_en_cat[col_index] = en_cell_value
 
             # Reset trailing elements to None
-            current_category[col_index + 1 :] = [None] * (  # noqa
-                current_category_len - col_index - 1
-            )
-            current_en_category[col_index + 1 :] = [None] * (  # noqa
-                current_category_len - col_index - 1
-            )
+            cur_bo_cat[col_index + 1 :] = [None] * (cur_cat_len - col_index - 1)  # noqa
+            cur_en_cat[col_index + 1 :] = [None] * (cur_cat_len - col_index - 1)  # noqa
 
             # Add non-empty elements to the result
             active_category = [
-                category for category in current_category if category is not None
+                category for category in cur_bo_cat if category is not None
             ]
-            extracted_categories.append(active_category)
+            bo_categories.append(active_category)
 
             active_en_category = [
-                category for category in current_en_category if category is not None
+                category for category in cur_en_cat if category is not None
             ]
-            en_extracted_categories.append(active_en_category)
+            en_categories.append(active_en_category)
 
-        self.bo_extracted_categories = extracted_categories
-        self.en_extracted_categories = en_extracted_categories
+        self.bo_extracted_categories = bo_categories
+        self.en_extracted_categories = en_categories
 
     def process_file(self):
         """
