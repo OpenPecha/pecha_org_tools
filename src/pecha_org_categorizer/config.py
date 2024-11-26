@@ -12,7 +12,7 @@ def download_spreedsheet(spreedsheet_link: str = spreedsheet_link):
     # B.1 download the catalog
     http = urllib3.PoolManager()
     r = http.request("GET", spreedsheet_link, preload_content=False)
-    tmp = tempfile.NamedTemporaryFile(mode="wb", suffix=".xlsx")
+    tmp = tempfile.NamedTemporaryFile(mode="wb", suffix=".xlsx", delete=False)
     while True:
         data = r.read(65536)
         if not data:
