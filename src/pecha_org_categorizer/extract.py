@@ -105,22 +105,22 @@ class CategoryExtractor:
         Get the category hierarchy for a given category name.
         """
 
-        bo_hierarchy = self.get_category_by_lang(
+        bo_category = self.get_category_by_lang(
             category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
         )
-        en_hierarchy = self.get_english_hierarchy_by_bo(
+        en_category = self.get_en_category_by_bo(
             category_name, pecha_metadata, text_type=text_type
         )
 
-        return {"bo": bo_hierarchy, "en": en_hierarchy}
+        return {"bo": bo_category, "en": en_category}
 
-    def get_english_hierarchy_by_bo(
+    def get_en_category_by_bo(
         self,
         category_name: str,
         pecha_metadata: dict,
         text_type: TextType = TextType.NONE,
     ):
-        bo_hierarchy = self.get_category_by_lang(
+        bo_category = self.get_category_by_lang(
             category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
         )
 
@@ -129,7 +129,7 @@ class CategoryExtractor:
 
         matched_idx = None
         for idx, category_hierarchy in enumerate(bo_formatted_categories):
-            if category_hierarchy == bo_hierarchy:
+            if category_hierarchy == bo_category:
                 matched_idx = idx
                 break
 
