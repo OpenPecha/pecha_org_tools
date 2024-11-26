@@ -120,20 +120,17 @@ class CategoryExtractor:
         pecha_metadata: dict,
         text_type: TextType = TextType.NONE,
     ):
-        bo_category = self.get_category_by_lang(
-            category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
-        )
-
-        bo_categories = self.bo_categories
-        en_categories = self.en_categories
+        """
+        Get english category hierarchy by matching with category name in Tibetan.
+        """
 
         matched_idx = None
-        for idx, category_hierarchy in enumerate(bo_categories):
-            if category_hierarchy == bo_category:
+        for idx, bo_category in enumerate(self.bo_categories):
+            if bo_category[-1]["name"] == category_name:
                 matched_idx = idx
                 break
 
-        matched_category = en_categories[matched_idx]
+        matched_category = self.en_categories[matched_idx]
         if text_type == TextType.ROOT:
             matched_category.append(
                 {"name": "Root text", "enDesc": "", "enShortDesc": ""}
@@ -176,12 +173,12 @@ class CategoryExtractor:
         for formatted_category in formatted_categories:
             for category in formatted_category:
                 if category["name"] == category_name:
-                    matched_category = formatted_category
+                    matched_category = formatted_category.copy()
                     break
             if matched_category:
                 break
 
-        if matched_category is None:
+        if not matched_category:
             raise ValueError(f"Category not found for {category_name}")
 
         if lang == "bo":

@@ -300,11 +300,6 @@ def test_get_category():
                 "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
                 "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
             },
-            {
-                "name": "སློབ་གྲྭ་ཁ་འདོན།",
-                "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
-                "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
-            },
         ],
         "en": [
             {
@@ -320,6 +315,3 @@ def test_get_category():
         ],
     }
     assert output == expected_output
-
-
-test_get_category()
