@@ -95,7 +95,7 @@ class CategoryExtractor:
 
         return bo_formatted_categories, en_formatted_categories
 
-    def get_category_hierarchy(
+    def get_category(
         self,
         category_name: str,
         pecha_metadata: dict,

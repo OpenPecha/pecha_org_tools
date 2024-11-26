@@ -268,7 +268,7 @@ def test_get_category_by_lang():
     ]
 
 
-def test_get_category_hierarchy():
+def test_get_category():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
@@ -287,7 +287,7 @@ def test_get_category_hierarchy():
             "enShortDesc": "School Recitation Short heDescription",
         },
     }
-    output = categorizer.get_category_hierarchy(category_name, pecha_metadata)
+    output = categorizer.get_category(category_name, pecha_metadata)
     expected_output = {
         "bo": [
             {
@@ -322,4 +322,4 @@ def test_get_category_hierarchy():
     assert output == expected_output
 
 
-test_get_category_hierarchy()
+test_get_category()
