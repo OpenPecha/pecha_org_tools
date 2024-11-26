@@ -105,7 +105,7 @@ class CategoryExtractor:
         Get the category hierarchy for a given category name.
         """
 
-        bo_hierarchy = self.get_category_hierarchy_by_lang(
+        bo_hierarchy = self.get_category_by_lang(
             category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
         )
         en_hierarchy = self.get_english_hierarchy_by_bo(
@@ -120,7 +120,7 @@ class CategoryExtractor:
         pecha_metadata: dict,
         text_type: TextType = TextType.NONE,
     ):
-        bo_hierarchy = self.get_category_hierarchy_by_lang(
+        bo_hierarchy = self.get_category_by_lang(
             category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
         )
 
@@ -133,25 +133,25 @@ class CategoryExtractor:
                 matched_idx = idx
                 break
 
-        matched_category_hierarchy = en_formatted_categories[matched_idx]
+        matched_category = en_formatted_categories[matched_idx]
         if text_type == TextType.ROOT:
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {"name": "Root text", "enDesc": "", "enShortDesc": ""}
             )
         elif text_type == TextType.COMMENTARY:
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
             )
-        matched_category_hierarchy.append(
+        matched_category.append(
             {
                 "name": pecha_metadata["en"]["title"],
                 "enDesc": pecha_metadata["en"]["enDesc"],
                 "enShortDesc": pecha_metadata["en"]["enShortDesc"],
             }
         )
-        return matched_category_hierarchy
+        return matched_category
 
-    def get_category_hierarchy_by_lang(
+    def get_category_by_lang(
         self,
         category_name: str,
         pecha_metadata: dict,
@@ -172,28 +172,28 @@ class CategoryExtractor:
         else:
             raise ValueError(f"Unsupported language: {lang}")
 
-        matched_category_hierarchy = None
-        for category_hierarchy in formatted_categories:
-            for category in category_hierarchy:
+        matched_category = None
+        for formatted_category in formatted_categories:
+            for category in formatted_category:
                 if category["name"] == category_name:
-                    matched_category_hierarchy = category_hierarchy
+                    matched_category = formatted_category
                     break
-            if matched_category_hierarchy:
+            if matched_category:
                 break
 
-        if matched_category_hierarchy is None:
+        if matched_category is None:
             raise ValueError(f"Category not found for {category_name}")
 
         if lang == "bo":
             if text_type == TextType.ROOT:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "རྩ་བ།", "heDesc": "", "heShortDesc": ""}
                 )
             elif text_type == TextType.COMMENTARY:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "འགྲེལ་པ།", "heDesc": "", "heShortDesc": ""}
                 )
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {
                     "name": pecha_metadata["title"],
                     "heDesc": pecha_metadata["heDesc"],
@@ -202,21 +202,21 @@ class CategoryExtractor:
             )
         else:
             if text_type == TextType.ROOT:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "Root text", "enDesc": "", "enShortDesc": ""}
                 )
             elif text_type == TextType.COMMENTARY:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
                 )
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {
                     "name": pecha_metadata["title"],
                     "enDesc": pecha_metadata["enDesc"],
                     "enShortDesc": pecha_metadata["enShortDesc"],
                 }
             )
-        return matched_category_hierarchy
+        return matched_category
 
 
 def parse_category_text(text: str):

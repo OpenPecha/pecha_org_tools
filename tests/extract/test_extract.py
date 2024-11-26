@@ -168,7 +168,7 @@ def test_format_category():
     ]
 
 
-def test_get_category_hierarchy_by_lang():
+def test_get_category_by_lang():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
@@ -180,9 +180,7 @@ def test_get_category_hierarchy_by_lang():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy_by_lang(
-        category_name, pecha_metadata, "bo"
-    )
+    output = categorizer.get_category_by_lang(category_name, pecha_metadata, "bo")
     assert output == [
         {
             "name": "ཁ་འདོན།",
@@ -204,7 +202,7 @@ def test_get_category_hierarchy_by_lang():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy_by_lang(
+    output = categorizer.get_category_by_lang(
         category_name, pecha_metadata, "bo", TextType.ROOT
     )
     assert output == [
@@ -230,9 +228,7 @@ def test_get_category_hierarchy_by_lang():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy_by_lang(
-        category_name, pecha_metadata, "en"
-    )
+    output = categorizer.get_category_by_lang(category_name, pecha_metadata, "en")
     assert output == [
         {
             "name": "Recitation",
@@ -254,7 +250,7 @@ def test_get_category_hierarchy_by_lang():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy_by_lang(
+    output = categorizer.get_category_by_lang(
         category_name, pecha_metadata, "en", TextType.COMMENTARY
     )
     assert output == [
