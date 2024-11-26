@@ -4,8 +4,8 @@ from typing import List, Optional, Union
 
 from openpyxl import load_workbook
 
-from pecha_org_categorizer.config import download_spreedsheet
-from pecha_org_categorizer.enums import TextType
+from pecha_org_tools.config import download_spreedsheet
+from pecha_org_tools.enums import TextType
 
 
 class CategoryExtractor:

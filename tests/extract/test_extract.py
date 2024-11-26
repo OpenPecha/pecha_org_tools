@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from pecha_org_categorizer.enums import TextType
-from pecha_org_categorizer.extract import (
+from pecha_org_tools.enums import TextType
+from pecha_org_tools.extract import (
     CategoryExtractor,
     format_categories,
     parse_category_text,
