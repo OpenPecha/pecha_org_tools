@@ -168,7 +168,7 @@ def test_format_category():
     ]
 
 
-def test_get_category_hierarchy():
+def test_get_category_hierarchy_by_lang():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
@@ -180,7 +180,9 @@ def test_get_category_hierarchy():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "bo")
+    output = categorizer.get_category_hierarchy_by_lang(
+        category_name, pecha_metadata, "bo"
+    )
     assert output == [
         {
             "name": "ཁ་འདོན།",
@@ -202,7 +204,7 @@ def test_get_category_hierarchy():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy(
+    output = categorizer.get_category_hierarchy_by_lang(
         category_name, pecha_metadata, "bo", TextType.ROOT
     )
     assert output == [
@@ -228,7 +230,9 @@ def test_get_category_hierarchy():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "en")
+    output = categorizer.get_category_hierarchy_by_lang(
+        category_name, pecha_metadata, "en"
+    )
     assert output == [
         {
             "name": "Recitation",
@@ -250,7 +254,7 @@ def test_get_category_hierarchy():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy(
+    output = categorizer.get_category_hierarchy_by_lang(
         category_name, pecha_metadata, "en", TextType.COMMENTARY
     )
     assert output == [
@@ -266,6 +270,60 @@ def test_get_category_hierarchy():
             "enShortDesc": "School Recitation Short heDescription",
         },
     ]
+
+
+def test_get_category_hierarchy():
+    DATA_DIR = Path(__file__).parent / "data"
+    input_xlsx = DATA_DIR / "input.xlsx"
+
+    categorizer = CategoryExtractor(input_xlsx)
+
+    category_name = "ཁ་འདོན།"
+    pecha_metadata = {
+        "bo": {
+            "title": "སློབ་གྲྭ་ཁ་འདོན།",
+            "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+        "en": {
+            "title": "School Recitation",
+            "enDesc": "School Recitation heDescription",
+            "enShortDesc": "School Recitation Short heDescription",
+        },
+    }
+    output = categorizer.get_category_hierarchy(category_name, pecha_metadata)
+    expected_output = {
+        "bo": [
+            {
+                "name": "ཁ་འདོན།",
+                "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+                "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            },
+            {
+                "name": "སློབ་གྲྭ་ཁ་འདོན།",
+                "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+                "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            },
+            {
+                "name": "སློབ་གྲྭ་ཁ་འདོན།",
+                "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+                "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            },
+        ],
+        "en": [
+            {
+                "name": "Recitation",
+                "enDesc": "Explanation of Recitation",
+                "enShortDesc": "Brief Explanation of Recitation",
+            },
+            {
+                "name": "School Recitation",
+                "enDesc": "School Recitation heDescription",
+                "enShortDesc": "School Recitation Short heDescription",
+            },
+        ],
+    }
+    assert output == expected_output
 
 
 test_get_category_hierarchy()

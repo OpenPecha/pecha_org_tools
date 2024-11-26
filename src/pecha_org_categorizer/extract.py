@@ -103,6 +103,62 @@ class CategoryExtractor:
         self,
         category_name: str,
         pecha_metadata: dict,
+        text_type: TextType = TextType.NONE,
+    ):
+        """
+        Get the category hierarchy for a given category name.
+        """
+
+        bo_hierarchy = self.get_category_hierarchy_by_lang(
+            category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
+        )
+        en_hierarchy = self.get_english_hierarchy_by_bo(
+            category_name, pecha_metadata, text_type=text_type
+        )
+
+        return {"bo": bo_hierarchy, "en": en_hierarchy}
+
+    def get_english_hierarchy_by_bo(
+        self,
+        category_name: str,
+        pecha_metadata: dict,
+        text_type: TextType = TextType.NONE,
+    ):
+        bo_hierarchy = self.get_category_hierarchy_by_lang(
+            category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
+        )
+
+        bo_formatted_categories = self.bo_formatted_categories
+        en_formatted_categories = self.en_formatted_categories
+
+        matched_idx = None
+        for idx, category_hierarchy in enumerate(bo_formatted_categories):
+            if category_hierarchy == bo_hierarchy:
+                matched_idx = idx
+                break
+
+        matched_category_hierarchy = en_formatted_categories[matched_idx]
+        if text_type == TextType.ROOT:
+            matched_category_hierarchy.append(
+                {"name": "Root text", "enDesc": "", "enShortDesc": ""}
+            )
+        elif text_type == TextType.COMMENTARY:
+            matched_category_hierarchy.append(
+                {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
+            )
+        matched_category_hierarchy.append(
+            {
+                "name": pecha_metadata["en"]["title"],
+                "enDesc": pecha_metadata["en"]["enDesc"],
+                "enShortDesc": pecha_metadata["en"]["enShortDesc"],
+            }
+        )
+        return matched_category_hierarchy
+
+    def get_category_hierarchy_by_lang(
+        self,
+        category_name: str,
+        pecha_metadata: dict,
         lang: str,
         text_type: TextType = TextType.NONE,
     ):
