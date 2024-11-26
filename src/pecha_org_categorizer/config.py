@@ -19,4 +19,4 @@ def download_spreedsheet(spreedsheet_link: str = spreedsheet_link):
             break
         tmp.write(data)
     r.release_conn()
-    return tmp
+    return tmp.name

@@ -10,7 +10,7 @@ from pecha_org_categorizer.enums import TextType
 
 class CategoryExtractor:
     def __init__(self, input_file: Optional[Path] = None):
-        input_file = input_file or Path(download_spreedsheet().name)
+        input_file = input_file or Path(download_spreedsheet())
         self.input_file = input_file
         self.bo_formatted_categories, self.en_formatted_categories = self.process_file()
 
