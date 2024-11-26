@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pecha-org-categorizer"
+name = "pecha-org-tools"
 version = "0.0.1"
 authors = [
-  { name="OpenPecha", email="dev@openpecha.org" },
+  { name="OpenPecha", email="tsundue@esukhia.org, ta4tsering@esukhia.org" },
 ]
-description = "A small example package"
+description = "A package to help with data preparation for pecha.org"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
