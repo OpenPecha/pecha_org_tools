@@ -3,8 +3,8 @@ from pathlib import Path
 from pecha_org_categorizer.enums import TextType
 from pecha_org_categorizer.extract import (
     CategoryExtractor,
-    extract_text_details,
     format_categories,
+    parse_category_text,
 )
 
 
@@ -100,20 +100,20 @@ def test_extract_category():
 
 def parse_category():
     text = "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
 
     assert name == "ཁ་འདོན།"
     assert heDesc == "ཁ་འདོན་འགྲེལ་བཤད་"
     assert heShortDesc == "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་"
 
     text = "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
     assert name == "སྨོན་ལམ།"
     assert heDesc == "སྨོན་ལམ་འགྲེལ་བཤད་"
     assert heShortDesc == ""
 
     text = "བཟང་སྤྱོད་སྨོན་ལམ།"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
     assert name == "བཟང་སྤྱོད་སྨོན་ལམ།"
     assert heDesc == ""
     assert heShortDesc == ""
@@ -168,7 +168,7 @@ def test_format_category():
     ]
 
 
-def test_get_category_hierarchy():
+def test_get_category_by_lang():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"
 
@@ -180,7 +180,7 @@ def test_get_category_hierarchy():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "bo")
+    output = categorizer.get_category_by_lang(category_name, pecha_metadata, "bo")
     assert output == [
         {
             "name": "ཁ་འདོན།",
@@ -202,7 +202,7 @@ def test_get_category_hierarchy():
         "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
         "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
     }
-    output = categorizer.get_category_hierarchy(
+    output = categorizer.get_category_by_lang(
         category_name, pecha_metadata, "bo", TextType.ROOT
     )
     assert output == [
@@ -228,7 +228,7 @@ def test_get_category_hierarchy():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy(category_name, pecha_metadata, "en")
+    output = categorizer.get_category_by_lang(category_name, pecha_metadata, "en")
     assert output == [
         {
             "name": "Recitation",
@@ -250,7 +250,7 @@ def test_get_category_hierarchy():
         "enShortDesc": "School Recitation Short heDescription",
     }
 
-    output = categorizer.get_category_hierarchy(
+    output = categorizer.get_category_by_lang(
         category_name, pecha_metadata, "en", TextType.COMMENTARY
     )
     assert output == [
@@ -268,4 +268,53 @@ def test_get_category_hierarchy():
     ]
 
 
-test_get_category_hierarchy()
+test_get_category_by_lang()
+
+
+def test_get_category():
+    DATA_DIR = Path(__file__).parent / "data"
+    input_xlsx = DATA_DIR / "input.xlsx"
+
+    categorizer = CategoryExtractor(input_xlsx)
+
+    category_name = "ཁ་འདོན།"
+    pecha_metadata = {
+        "bo": {
+            "title": "སློབ་གྲྭ་ཁ་འདོན།",
+            "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+            "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+        },
+        "en": {
+            "title": "School Recitation",
+            "enDesc": "School Recitation heDescription",
+            "enShortDesc": "School Recitation Short heDescription",
+        },
+    }
+    output = categorizer.get_category(category_name, pecha_metadata)
+    expected_output = {
+        "bo": [
+            {
+                "name": "ཁ་འདོན།",
+                "heDesc": "ཁ་འདོན་འགྲེལ་བཤད་",
+                "heShortDesc": "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            },
+            {
+                "name": "སློབ་གྲྭ་ཁ་འདོན།",
+                "heDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་",
+                "heShortDesc": "སློབ་གྲྭ་ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་",
+            },
+        ],
+        "en": [
+            {
+                "name": "Recitation",
+                "enDesc": "Explanation of Recitation",
+                "enShortDesc": "Brief Explanation of Recitation",
+            },
+            {
+                "name": "School Recitation",
+                "enDesc": "School Recitation heDescription",
+                "enShortDesc": "School Recitation Short heDescription",
+            },
+        ],
+    }
+    assert output == expected_output

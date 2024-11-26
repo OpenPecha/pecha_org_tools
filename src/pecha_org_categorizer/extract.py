@@ -1,17 +1,18 @@
 import re
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 from openpyxl import load_workbook
 
-from pecha_org_categorizer.config import PECHA_CATEGORIES_FILE
+from pecha_org_categorizer.config import download_spreedsheet
 from pecha_org_categorizer.enums import TextType
 
 
 class CategoryExtractor:
-    def __init__(self, input_file: Path = PECHA_CATEGORIES_FILE):
+    def __init__(self, input_file: Optional[Path] = None):
+        input_file = input_file or Path(download_spreedsheet())
         self.input_file = input_file
-        self.bo_formatted_categories, self.en_formatted_categories = self.process_file()
+        self.bo_categories, self.en_categories = self.process_file()
 
     @staticmethod
     def read_xlsx_file(file_path: Path):
@@ -30,11 +31,11 @@ class CategoryExtractor:
         Process the xlsx file and extract hierarchical categories from its contents.
         """
         self.rows_data = self.read_xlsx_file(self.input_file)
-        extracted_categories = []
-        current_category: List[Union[str, None]] = []
+        bo_categories = []
+        cur_bo_cat: List[Union[str, None]] = []
 
-        en_extracted_categories = []
-        current_en_category: List[Union[str, None]] = []
+        en_categories = []
+        cur_en_cat: List[Union[str, None]] = []
 
         for row in self.rows_data:
             # Find the first non-None value and its index
@@ -46,59 +47,108 @@ class CategoryExtractor:
             if not flag:
                 continue
 
-            current_category_len = len(current_category)
+            cur_cat_len = len(cur_bo_cat)
             cell_value = cell_value.strip()
 
             en_cell_value = row[col_index + 1].strip()
 
             # Update or extend the current category hierarchy
-            if current_category_len == col_index:
-                current_category.append(cell_value)
-                current_en_category.append(en_cell_value)
+            if cur_cat_len == col_index:
+                cur_bo_cat.append(cell_value)
+                cur_en_cat.append(en_cell_value)
             else:
-                current_category[col_index] = cell_value
-                current_en_category[col_index] = en_cell_value
+                cur_bo_cat[col_index] = cell_value
+                cur_en_cat[col_index] = en_cell_value
 
             # Reset trailing elements to None
-            current_category[col_index + 1 :] = [None] * (  # noqa
-                current_category_len - col_index - 1
-            )
-            current_en_category[col_index + 1 :] = [None] * (  # noqa
-                current_category_len - col_index - 1
-            )
+            cur_bo_cat[col_index + 1 :] = [None] * (cur_cat_len - col_index - 1)  # noqa
+            cur_en_cat[col_index + 1 :] = [None] * (cur_cat_len - col_index - 1)  # noqa
 
             # Add non-empty elements to the result
             active_category = [
-                category for category in current_category if category is not None
+                category for category in cur_bo_cat if category is not None
             ]
-            extracted_categories.append(active_category)
+            bo_categories.append(active_category)
 
             active_en_category = [
-                category for category in current_en_category if category is not None
+                category for category in cur_en_cat if category is not None
             ]
-            en_extracted_categories.append(active_en_category)
+            en_categories.append(active_en_category)
 
-        self.bo_extracted_categories = extracted_categories
-        self.en_extracted_categories = en_extracted_categories
+        self.bo_extracted_categories = bo_categories
+        self.en_extracted_categories = en_categories
 
     def process_file(self):
         """
         Extract and format categories from the provided xlsx file.
         """
         self.extract_categories()
-        bo_formatted_categories, en_formatted_categories = [], []
+        bo_categories, en_categories = [], []
         for bo_category_hierarchy, en_category_hierarchy in zip(
             self.bo_extracted_categories, self.en_extracted_categories
         ):
             bo_formatted_category = format_categories(bo_category_hierarchy, "bo")
             en_formatted_category = format_categories(en_category_hierarchy, "en")
 
-            bo_formatted_categories.append(bo_formatted_category)
-            en_formatted_categories.append(en_formatted_category)
+            bo_categories.append(bo_formatted_category)
+            en_categories.append(en_formatted_category)
 
-        return bo_formatted_categories, en_formatted_categories
+        return bo_categories, en_categories
 
-    def get_category_hierarchy(
+    def get_category(
+        self,
+        category_name: str,
+        pecha_metadata: dict,
+        text_type: TextType = TextType.NONE,
+    ):
+        """
+        Get the category hierarchy for a given category name.
+        """
+
+        bo_category = self.get_category_by_lang(
+            category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
+        )
+        en_category = self.get_en_category_by_bo(
+            category_name, pecha_metadata, text_type=text_type
+        )
+
+        return {"bo": bo_category, "en": en_category}
+
+    def get_en_category_by_bo(
+        self,
+        category_name: str,
+        pecha_metadata: dict,
+        text_type: TextType = TextType.NONE,
+    ):
+        """
+        Get english category hierarchy by matching with category name in Tibetan.
+        """
+
+        matched_idx = None
+        for idx, bo_category in enumerate(self.bo_categories):
+            if bo_category[-1]["name"] == category_name:
+                matched_idx = idx
+                break
+
+        matched_category = self.en_categories[matched_idx]
+        if text_type == TextType.ROOT:
+            matched_category.append(
+                {"name": "Root text", "enDesc": "", "enShortDesc": ""}
+            )
+        elif text_type == TextType.COMMENTARY:
+            matched_category.append(
+                {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
+            )
+        matched_category.append(
+            {
+                "name": pecha_metadata["en"]["title"],
+                "enDesc": pecha_metadata["en"]["enDesc"],
+                "enShortDesc": pecha_metadata["en"]["enShortDesc"],
+            }
+        )
+        return matched_category
+
+    def get_category_by_lang(
         self,
         category_name: str,
         pecha_metadata: dict,
@@ -113,34 +163,31 @@ class CategoryExtractor:
         assert "heShortDesc" in pecha_metadata or "enShortDesc" in pecha_metadata
 
         if lang == "bo":
-            formatted_categories = self.bo_formatted_categories
+            formatted_categories = self.bo_categories
         elif lang == "en":
-            formatted_categories = self.en_formatted_categories
+            formatted_categories = self.en_categories
         else:
             raise ValueError(f"Unsupported language: {lang}")
 
-        matched_category_hierarchy = None
-        for category_hierarchy in formatted_categories:
-            for category in category_hierarchy:
-                if category["name"] == category_name:
-                    matched_category_hierarchy = category_hierarchy
-                    break
-            if matched_category_hierarchy:
+        matched_category = None
+        for formatted_category in formatted_categories:
+            if formatted_category[-1]["name"] == category_name:
+                matched_category = formatted_category.copy()
                 break
 
-        if matched_category_hierarchy is None:
+        if not matched_category:
             raise ValueError(f"Category not found for {category_name}")
 
         if lang == "bo":
             if text_type == TextType.ROOT:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "རྩ་བ།", "heDesc": "", "heShortDesc": ""}
                 )
             elif text_type == TextType.COMMENTARY:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "འགྲེལ་པ།", "heDesc": "", "heShortDesc": ""}
                 )
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {
                     "name": pecha_metadata["title"],
                     "heDesc": pecha_metadata["heDesc"],
@@ -149,24 +196,24 @@ class CategoryExtractor:
             )
         else:
             if text_type == TextType.ROOT:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "Root text", "enDesc": "", "enShortDesc": ""}
                 )
             elif text_type == TextType.COMMENTARY:
-                matched_category_hierarchy.append(
+                matched_category.append(
                     {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
                 )
-            matched_category_hierarchy.append(
+            matched_category.append(
                 {
                     "name": pecha_metadata["title"],
                     "enDesc": pecha_metadata["enDesc"],
                     "enShortDesc": pecha_metadata["enShortDesc"],
                 }
             )
-        return matched_category_hierarchy
+        return matched_category
 
 
-def extract_text_details(text: str):
+def parse_category_text(text: str):
     """
     Extract the main text and any descriptions (in parentheses) from a given string.
     """
@@ -186,9 +233,9 @@ def format_categories(category_hierarchy: List[str], lang: str):
     """
     Format each category hierarchy into a structured format with main text and descriptions.
     """
-    formatted_hierarchy = []
+    formatted_category = []
     for category in category_hierarchy:
-        name, description, short_description = extract_text_details(category)
+        name, description, short_description = parse_category_text(category)
         if lang == "bo":
             category_data = {
                 "name": name,
@@ -202,6 +249,6 @@ def format_categories(category_hierarchy: List[str], lang: str):
                 "enShortDesc": short_description,
             }
 
-        formatted_hierarchy.append(category_data)
+        formatted_category.append(category_data)
 
-    return formatted_hierarchy
+    return formatted_category
