@@ -3,8 +3,8 @@ from pathlib import Path
 from pecha_org_categorizer.enums import TextType
 from pecha_org_categorizer.extract import (
     CategoryExtractor,
-    extract_text_details,
     format_categories,
+    parse_category_text,
 )
 
 
@@ -100,20 +100,20 @@ def test_extract_category():
 
 def parse_category():
     text = "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
 
     assert name == "ཁ་འདོན།"
     assert heDesc == "ཁ་འདོན་འགྲེལ་བཤད་"
     assert heShortDesc == "ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་"
 
     text = "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
     assert name == "སྨོན་ལམ།"
     assert heDesc == "སྨོན་ལམ་འགྲེལ་བཤད་"
     assert heShortDesc == ""
 
     text = "བཟང་སྤྱོད་སྨོན་ལམ།"
-    name, heDesc, heShortDesc = extract_text_details(text)
+    name, heDesc, heShortDesc = parse_category_text(text)
     assert name == "བཟང་སྤྱོད་སྨོན་ལམ།"
     assert heDesc == ""
     assert heShortDesc == ""

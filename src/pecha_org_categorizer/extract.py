@@ -219,7 +219,7 @@ class CategoryExtractor:
         return matched_category_hierarchy
 
 
-def extract_text_details(text: str):
+def parse_category_text(text: str):
     """
     Extract the main text and any descriptions (in parentheses) from a given string.
     """
@@ -241,7 +241,7 @@ def format_categories(category_hierarchy: List[str], lang: str):
     """
     formatted_hierarchy = []
     for category in category_hierarchy:
-        name, description, short_description = extract_text_details(category)
+        name, description, short_description = parse_category_text(category)
         if lang == "bo":
             category_data = {
                 "name": name,
