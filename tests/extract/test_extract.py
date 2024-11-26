@@ -268,6 +268,9 @@ def test_get_category_by_lang():
     ]
 
 
+test_get_category_by_lang()
+
+
 def test_get_category():
     DATA_DIR = Path(__file__).parent / "data"
     input_xlsx = DATA_DIR / "input.xlsx"

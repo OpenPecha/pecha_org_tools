@@ -171,11 +171,8 @@ class CategoryExtractor:
 
         matched_category = None
         for formatted_category in formatted_categories:
-            for category in formatted_category:
-                if category["name"] == category_name:
-                    matched_category = formatted_category.copy()
-                    break
-            if matched_category:
+            if formatted_category[-1]["name"] == category_name:
+                matched_category = formatted_category.copy()
                 break
 
         if not matched_category:
