@@ -13,6 +13,8 @@
 - A python package to get category for a particular pecha.
 - Spreedsheet link [here](https://docs.google.com/spreadsheets/d/16pvNdKqGSb_CNZEkzS8B9fn_o9MMsoqA4vC5_X9G7bc/edit?usp=sharing).
 - Kindly ask for permission from [@tenzin3](https://github.com/tenzin3) for write access to the spreadsheet.
+- Input the  Pechas with unassigned categories in the Spreedsheet [here](https://docs.google.com/spreadsheets/d/16pvNdKqGSb_CNZEkzS8B9fn_o9MMsoqA4vC5_X9G7bc/edit?gid=1284579012#gid=1284579012).
+
 - To know how to use the package, refer to `extract` folder from `tests` directory.
 
 

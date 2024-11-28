@@ -252,3 +252,8 @@ def format_categories(category_hierarchy: List[str], lang: str):
         formatted_category.append(category_data)
 
     return formatted_category
+
+
+if __name__ == "__main__":
+    categorizer = CategoryExtractor()
+    print(categorizer)
