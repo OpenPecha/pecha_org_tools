@@ -1,0 +1,75 @@
+import os
+from typing import Any, Dict
+
+import anthropic
+
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise ValueError("Please set ANTHROPIC_API_KEY environment variable")
+
+
+def get_claude_response(prompt: str):
+    # Initialize the client with your API key
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+    # Create a message request
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20240620",  # Specify the model version
+        max_tokens=1000,  # Set maximum tokens for the response
+        temperature=0,  # Adjust randomness of responses (0.0 for deterministic)
+        system="You are a helpful assistant.",  # System message for context
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    # Print the response content
+    return response.content[0].text
+
+
+def translate_bo_to_en(text: str):
+    prompt = f"""You are a professional translator specializing in Tibetan to English translation.
+
+    Follow these strict guidelines:
+
+    1. Translate the Tibetan text with the highest linguistic accuracy
+    2. Preserve the original meaning and nuanced context
+    3. Use clear, natural English that sounds like a native speaker
+    4. If the text contains cultural or idiomatic expressions, provide a culturally appropriate equivalent
+    5. Avoid literal word-for-word translations
+    6. Return ONLY the English translation, with no additional commentary or explanation
+
+    Source Tibetan Text:
+    {text}
+
+    Translation:"""
+
+    response = get_claude_response(prompt)
+    return response.strip()
+
+
+def get_en_content_translation(bo_content: Dict[str, Any]):
+    """
+    Get the literal english translation of the bo content complex structure
+    Eg: Input:> bo_content = {
+                "བོད་": {"data": ["བོད་ནི་འཛམ་གླིང་གི་ས་ཆ་མཐོ་ཤོས་དང་ཆེས་ངོམས་ཅན་གྱི་ས་ཁུལ་ཞིག་ཡིན།"],
+                        "བོད་མི་": {"གཞི་གྲངས་": []},
+                "སྨོན་ལམ་རིག་ནུས།་": {"data": [],"མཉེན་ཆས་སྒྱུར་ཞིབ་": {"data": []}}
+                }
+
+        Output:> en_content = {
+            "Tibet":{"data":[], "Tibetans": {"data":[]},
+            "Monlam AI": {"data":[],"Machine Translation": {"data":[]}}
+        }
+
+    1. The keys are translated, except for the "data" key which is same.
+    2. The values of the "data" key in output should be empty list.
+    """
+    en_content: Dict[str, Any] = {}
+    for key, value in bo_content.items():
+        if key == "data":
+            en_content[key] = []
+            continue
+
+        en_key = translate_bo_to_en(key)
+        en_content[en_key] = get_en_content_translation(value)
+
+    return en_content
