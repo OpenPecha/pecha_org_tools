@@ -119,6 +119,6 @@ def get_bo_content_translation(pecha_content: Dict[str, Any]):
             continue
 
         en_key = translate_to_bo(key)
-        en_content[en_key] = get_en_content_translation(value)
+        en_content[en_key] = get_bo_content_translation(value)
 
     return en_content
