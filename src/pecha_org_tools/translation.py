@@ -25,19 +25,19 @@ def get_claude_response(prompt: str):
     return response.content[0].text
 
 
-def translate_bo_to_en(text: str):
-    prompt = f"""You are a professional translator specializing in Tibetan to English translation.
+def translate_to_en(text: str):
+    prompt = f"""You are a professional translator doing translation  to English language.
 
     Follow these strict guidelines:
 
-    1. Translate the Tibetan text with the highest linguistic accuracy
+    1. Translate the text with the highest linguistic accuracy
     2. Preserve the original meaning and nuanced context
     3. Use clear, natural English that sounds like a native speaker
     4. If the text contains cultural or idiomatic expressions, provide a culturally appropriate equivalent
     5. Avoid literal word-for-word translations
     6. Return ONLY the English translation, with no additional commentary or explanation
 
-    Source Tibetan Text:
+    Source Text:
     {text}
 
     Translation:"""
@@ -46,10 +46,31 @@ def translate_bo_to_en(text: str):
     return response.strip()
 
 
-def get_en_content_translation(bo_content: Dict[str, Any]):
+def translate_to_bo(text: str):
+    prompt = f"""You are a professional translator doing translation to Tibetan language.
+
+    Follow these strict guidelines:
+
+    1. Translate the text with the highest linguistic accuracy
+    2. Preserve the original meaning and nuanced context
+    3. Use clear, natural Tibetan that sounds like a native speaker
+    4. If the text contains cultural or idiomatic expressions, provide a culturally appropriate equivalent
+    5. Avoid literal word-for-word translations
+    6. Return ONLY the Tibetan translation, with no additional commentary or explanation
+
+    Source Text:
+    {text}
+
+    Translation:"""
+
+    response = get_claude_response(prompt)
+    return response.strip()
+
+
+def get_en_content_translation(pecha_content: Dict[str, Any]):
     """
-    Get the literal english translation of the bo content complex structure
-    Eg: Input:> bo_content = {
+    Get the literal english translation of the content complex structure
+    Eg: Input:> pecha_content = {
                 "བོད་": {"data": ["བོད་ནི་འཛམ་གླིང་གི་ས་ཆ་མཐོ་ཤོས་དང་ཆེས་ངོམས་ཅན་གྱི་ས་ཁུལ་ཞིག་ཡིན།"],
                         "བོད་མི་": {"གཞི་གྲངས་": []},
                 "སྨོན་ལམ་རིག་ནུས།་": {"data": [],"མཉེན་ཆས་སྒྱུར་ཞིབ་": {"data": []}}
@@ -64,12 +85,40 @@ def get_en_content_translation(bo_content: Dict[str, Any]):
     2. The values of the "data" key in output should be empty list.
     """
     en_content: Dict[str, Any] = {}
-    for key, value in bo_content.items():
+    for key, value in pecha_content.items():
         if key == "data":
             en_content[key] = []
             continue
 
-        en_key = translate_bo_to_en(key)
+        en_key = translate_to_en(key)
         en_content[en_key] = get_en_content_translation(value)
+
+    return en_content
+
+
+def get_bo_content_translation(pecha_content: Dict[str, Any]):
+    """
+    Get the literal tibetan translation of the content complex structure
+    Eg: Input:> pecha_content = {
+            "Tibet":{"data":[], "Tibetans": {"data":[]},
+            "Monlam AI": {"data":[],"Machine Translation": {"data":[]}}
+        }
+
+        Output:> bo_content = {
+                "བོད་": {"data": ["བོད་ནི་འཛམ་གླིང་གི་ས་ཆ་མཐོ་ཤོས་དང་ཆེས་ངོམས་ཅན་གྱི་ས་ཁུལ་ཞིག་ཡིན།"],
+                        "བོད་མི་": {"གཞི་གྲངས་": []},
+                "སྨོན་ལམ་རིག་ནུས།་": {"data": [],"མཉེན་ཆས་སྒྱུར་ཞིབ་": {"data": []}}
+        }
+    1. The keys are translated, except for the "data" key which is same.
+    2. The values of the "data" key in output should be empty list.
+    """
+    en_content: Dict[str, Any] = {}
+    for key, value in pecha_content.items():
+        if key == "data":
+            en_content[key] = []
+            continue
+
+        en_key = translate_to_bo(key)
+        en_content[en_key] = get_bo_content_translation(value)
 
     return en_content
