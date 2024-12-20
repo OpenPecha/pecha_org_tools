@@ -43,3 +43,41 @@ def test_format_category():
         {"name": "འགྲེལ་བ།", "heDesc": "", "heShortDesc": ""},
         {"name": "བཟང་སྤྱོད་སྨོན་ལམ་འགྲེལ་བ་དེབ་། ༢", "heDesc": "", "heShortDesc": ""},
     ]
+
+    input = ["Recitation (Explanation of Recitation)(Brief Explanation of Recitation)"]
+    output = format_categories(input, "en")
+    assert output == [
+        {
+            "name": "Recitation",
+            "enDesc": "Explanation of Recitation",
+            "enShortDesc": "Brief Explanation of Recitation",
+        }
+    ]
+
+    input = [
+        "Recitation (Explanation of Recitation)(Brief Explanation of Recitation)",
+        "Aspiration Prayer (Explanation of Aspiration Prayer)(Brief Explanation of Aspiration Prayer)",
+        "The Prayer of Good Actions",
+        "Root Text",
+        "The Prayer of Good Actions Root Text Book",
+    ]
+    output = format_categories(input, "en")
+    assert output == [
+        {
+            "name": "Recitation",
+            "enDesc": "Explanation of Recitation",
+            "enShortDesc": "Brief Explanation of Recitation",
+        },
+        {
+            "name": "Aspiration Prayer",
+            "enDesc": "Explanation of Aspiration Prayer",
+            "enShortDesc": "Brief Explanation of Aspiration Prayer",
+        },
+        {"name": "The Prayer of Good Actions", "enDesc": "", "enShortDesc": ""},
+        {"name": "Root Text", "enDesc": "", "enShortDesc": ""},
+        {
+            "name": "The Prayer of Good Actions Root Text Book",
+            "enDesc": "",
+            "enShortDesc": "",
+        },
+    ]
