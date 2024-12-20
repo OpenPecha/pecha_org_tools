@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 from openpyxl import load_workbook
 
 from pecha_org_tools.config import download_spreedsheet
-from pecha_org_tools.enums import TextType
 
 
 class CategoryExtractor:
@@ -95,28 +94,19 @@ class CategoryExtractor:
 
         return bo_categories, en_categories
 
-    def get_category(
-        self,
-        category_name: str,
-        pecha_metadata: dict,
-        text_type: TextType = TextType.NONE,
-    ):
+    def get_category(self, category_name: str):
         """
         Get the category hierarchy for a given category name.
         """
 
         bo_category = self.get_category_by_lang(category_name, lang="bo")
-        en_category = self.get_en_category_by_bo(
-            category_name, pecha_metadata, text_type=text_type
-        )
+        en_category = self.get_en_category_by_bo(category_name)
 
         return {"bo": bo_category, "en": en_category}
 
     def get_en_category_by_bo(
         self,
         category_name: str,
-        pecha_metadata: dict,
-        text_type: TextType = TextType.NONE,
     ):
         """
         Get english category hierarchy by matching with category name in Tibetan.
@@ -129,21 +119,6 @@ class CategoryExtractor:
                 break
 
         matched_category = self.en_categories[matched_idx]
-        if text_type == TextType.ROOT:
-            matched_category.append(
-                {"name": "Root text", "enDesc": "", "enShortDesc": ""}
-            )
-        elif text_type == TextType.COMMENTARY:
-            matched_category.append(
-                {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
-            )
-        matched_category.append(
-            {
-                "name": pecha_metadata["en"]["title"],
-                "enDesc": pecha_metadata["en"]["enDesc"],
-                "enShortDesc": pecha_metadata["en"]["enShortDesc"],
-            }
-        )
         return matched_category
 
     def get_category_by_lang(
