@@ -105,9 +105,7 @@ class CategoryExtractor:
         Get the category hierarchy for a given category name.
         """
 
-        bo_category = self.get_category_by_lang(
-            category_name, pecha_metadata["bo"], lang="bo", text_type=text_type
-        )
+        bo_category = self.get_category_by_lang(category_name, lang="bo")
         en_category = self.get_en_category_by_bo(
             category_name, pecha_metadata, text_type=text_type
         )
@@ -151,16 +149,11 @@ class CategoryExtractor:
     def get_category_by_lang(
         self,
         category_name: str,
-        pecha_metadata: dict,
         lang: str,
-        text_type: TextType = TextType.NONE,
     ):
         """
         Get the category hierarchy for a given category name.
         """
-        assert "title" in pecha_metadata
-        assert "heDesc" in pecha_metadata or "enDesc" in pecha_metadata
-        assert "heShortDesc" in pecha_metadata or "enShortDesc" in pecha_metadata
 
         if lang == "bo":
             formatted_categories = self.bo_categories
@@ -178,38 +171,6 @@ class CategoryExtractor:
         if not matched_category:
             raise ValueError(f"Category not found for {category_name}")
 
-        if lang == "bo":
-            if text_type == TextType.ROOT:
-                matched_category.append(
-                    {"name": "རྩ་བ།", "heDesc": "", "heShortDesc": ""}
-                )
-            elif text_type == TextType.COMMENTARY:
-                matched_category.append(
-                    {"name": "འགྲེལ་པ།", "heDesc": "", "heShortDesc": ""}
-                )
-            matched_category.append(
-                {
-                    "name": pecha_metadata["title"],
-                    "heDesc": pecha_metadata["heDesc"],
-                    "heShortDesc": pecha_metadata["heShortDesc"],
-                }
-            )
-        else:
-            if text_type == TextType.ROOT:
-                matched_category.append(
-                    {"name": "Root text", "enDesc": "", "enShortDesc": ""}
-                )
-            elif text_type == TextType.COMMENTARY:
-                matched_category.append(
-                    {"name": "Commentaries", "enDesc": "", "enShortDesc": ""}
-                )
-            matched_category.append(
-                {
-                    "name": pecha_metadata["title"],
-                    "enDesc": pecha_metadata["enDesc"],
-                    "enShortDesc": pecha_metadata["enShortDesc"],
-                }
-            )
         return matched_category
 
 
