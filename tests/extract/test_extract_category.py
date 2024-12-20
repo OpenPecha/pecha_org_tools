@@ -16,6 +16,3 @@ def test_extract_category():
 
     assert extractor.bo_extracted_categories == expected_bo_categories
     assert extractor.en_extracted_categories == expected_en_categories
-
-
-test_extract_category()

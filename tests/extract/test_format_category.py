@@ -2,6 +2,9 @@ from pecha_org_tools.extract import format_categories
 
 
 def test_format_category():
+    input = ["བཟང་སྤྱོད་སྨོན་ལམ།"]
+    output = format_categories(input, "bo")
+    assert output == [{"name": "བཟང་སྤྱོད་སྨོན་ལམ།", "heDesc": "", "heShortDesc": ""}]
 
     input = ["ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་)"]
     output = format_categories(input, "bo")
@@ -13,21 +16,12 @@ def test_format_category():
         }
     ]
 
-    input = ["སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)"]
-    output = format_categories(input, "bo")
-    assert output == [
-        {"name": "སྨོན་ལམ།", "heDesc": "སྨོན་ལམ་འགྲེལ་བཤད་", "heShortDesc": ""}
-    ]
-
-    input = ["བཟང་སྤྱོད་སྨོན་ལམ།"]
-    output = format_categories(input, "bo")
-    assert output == [{"name": "བཟང་སྤྱོད་སྨོན་ལམ།", "heDesc": "", "heShortDesc": ""}]
-
     input = [
         "ཁ་འདོན།(ཁ་འདོན་འགྲེལ་བཤད་)(ཁ་འདོན་འགྲེལ་བཤད་ཐུང་ཐུང་)",
         "སྨོན་ལམ།(སྨོན་ལམ་འགྲེལ་བཤད་)(སྨོན་ལམ་འགྲེལ་བཤད་ཐུང་ཐུང་)",
         "བཟང་སྤྱོད་སྨོན་ལམ།(བཟང་སྤྱོད་འགྲེལ་བཤད་)(བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་)",
         "འགྲེལ་བ།",
+        "བཟང་སྤྱོད་སྨོན་ལམ་འགྲེལ་བ་དེབ་། ༢",
     ]
     output = format_categories(input, "bo")
     assert output == [
@@ -47,4 +41,5 @@ def test_format_category():
             "heShortDesc": "བཟང་སྤྱོད་འགྲེལ་བཤད་ཐུང་ཐུང་",
         },
         {"name": "འགྲེལ་བ།", "heDesc": "", "heShortDesc": ""},
+        {"name": "བཟང་སྤྱོད་སྨོན་ལམ་འགྲེལ་བ་དེབ་། ༢", "heDesc": "", "heShortDesc": ""},
     ]
