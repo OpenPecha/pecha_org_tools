@@ -18,7 +18,7 @@
 
 ## How it Works?
 
-![Category image](category.png)
+![Category image](resources/category.png)
 
 pecha.org organizes content in a tree-like structure, where a specific Pecha can belong to various nested categories or sections.
 
