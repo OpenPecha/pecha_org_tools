@@ -24,11 +24,10 @@ jobs:
         with:
           version: "1.7.1" # Or the version you want to use
 
-      - name: Configure Poetry
-        run: poetry config virtualenvs.create false
-
       - name: Install dependencies
-        run: poetry install --with dev
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: Run tests
         run: |

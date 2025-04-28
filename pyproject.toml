@@ -7,7 +7,7 @@ authors = [
     "Tashi Tsering <tashitsering@esukhia.org>"
 ]
 readme = "README.md"
-requires-python = ">=3.8"
+python-versions = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
