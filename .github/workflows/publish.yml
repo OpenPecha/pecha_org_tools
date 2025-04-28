@@ -47,13 +47,52 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git log --oneline -1 --grep="^feat\|^fix\|^refactor\|^perf\|^ci\|^build\|^chore\|^docs\|^style\|^test" --count > 0; then
+          # Get the current version
+          CURRENT_VERSION=$(poetry version -s)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          
+          # Get the last commit message
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          
+          # Determine version bump type based on commit message
+          if [[ $COMMIT_MSG == feat:* ]]; then
+            # Increment minor version
+            if [ "$MINOR" -eq 9 ]; then
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+            else
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            fi
+          elif [[ $COMMIT_MSG == fix:* ]]; then
+            # Increment patch version
+            if [ "$PATCH" -eq 9 ]; then
+              if [ "$MINOR" -eq 9 ]; then
+                MAJOR=$((MAJOR + 1))
+                MINOR=0
+                PATCH=0
+              else
+                MINOR=$((MINOR + 1))
+                PATCH=0
+              fi
+            else
+              PATCH=$((PATCH + 1))
+            fi
+          fi
+          
+          if [[ $COMMIT_MSG == feat:* ]] || [[ $COMMIT_MSG == fix:* ]]; then
             # Create a new branch
             git checkout -b version-bump-$(date +%Y%m%d-%H%M%S)
             
-            # Bump version and build
-            poetry version patch
-            NEW_VERSION=$(poetry version -s)
+            # Set new version
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+            poetry version "$NEW_VERSION"
+            
+            # Update version in pyproject.toml commitizen section
+            sed -i.bak "s/version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
+            rm pyproject.toml.bak
+            
             echo "New version: $NEW_VERSION"
             poetry build
             
@@ -63,12 +102,12 @@ jobs:
             # Push branch and create PR
             git push origin HEAD
             
-            # Create Pull Request without label
+            # Create Pull Request
             gh pr create --title "Bump version to $NEW_VERSION" \
-                        --body "Automated version bump to $NEW_VERSION"
+                        --body "Automated version bump to $NEW_VERSION based on commit type: ${COMMIT_MSG%%:*}"
             
             # Publish to PyPI
             poetry publish -u "__token__" -p "$PYPI_TOKEN"
           else
-            echo "No significant changes detected. Skipping version bump and release."
+            echo "No version bump needed. Commit type is not feat: or fix:"
           fi
