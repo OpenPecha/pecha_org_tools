@@ -50,6 +50,7 @@ jobs:
             NEW_VERSION=$(poetry version -s)
             echo "New version: $NEW_VERSION"
             echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+            poetry build  # Add build step before publishing
             git commit -am "Bump version to $NEW_VERSION"
             git tag $NEW_VERSION
             poetry publish -u "__token__" -p "$PYPI_TOKEN"
