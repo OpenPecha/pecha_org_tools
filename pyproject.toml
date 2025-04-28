@@ -3,8 +3,8 @@ name = "pecha-org-tools"
 version = "0.0.1"
 description = "A package to help with data preparation for pecha.org"
 authors = [
-    { name = "Tsundue", email = "tsundue@esukhia.org" },
-    { name = "Tashi Tsering", email = "tashitsering@esukhia.org" }
+    "Tsundue <tsundue@esukhia.org>",
+    "Tashi Tsering <tashitsering@esukhia.org>"
 ]
 readme = "README.md"
 requires-python = ">=3.8"
@@ -13,18 +13,19 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-  "openpyxl >= 3.1.5",
-  "urllib3 >= 2.2.3",
-  "anthropic == 0.40.0"
-]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+openpyxl = ">=3.1.5"
+urllib3 = ">=2.2.3"
+anthropic = "0.40.0"
 
 [tool.poetry.group.dev.dependencies]
-    pytest = "^7.1" # Example.  Add others.
+pytest = "^7.1"
 
-[build-system] #Poetry needs this
-    requires = ["poetry-core>=1.0.0"]
-    build-backend = "poetry.core.masonry.api"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
 "Homepage" = "https://github.com/OpenPecha/openpecha-project-template"
