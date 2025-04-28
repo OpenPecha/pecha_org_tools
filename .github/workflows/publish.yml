@@ -3,26 +3,29 @@ name: Publish Python Package
 on:
   push:
     branches:
-      - main  # Or master, whichever is your main branch
+      - main
 
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Important for full commit history
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"  # Or your preferred Python version
+          python-version: "3.9"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: "1.7.1" # Or the version you want to use
+          version: "1.7.1"
 
       - name: Install dependencies
         run: |
@@ -31,7 +34,7 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest  # Assumes you use pytest
+          poetry run pytest
 
       - name: Configure Git
         run: |
@@ -39,22 +42,34 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
       - name: Bump version and publish
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # or master
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Check for changes that warrant a release, using conventional commits
           if git log --oneline -1 --grep="^feat\|^fix\|^refactor\|^perf\|^ci\|^build\|^chore\|^docs\|^style\|^test" --count > 0; then
-            # Determine the next version (patch, minor, or major)
-            poetry version patch # or minor or major
+            # Create a new branch
+            git checkout -b version-bump-$(date +%Y%m%d-%H%M%S)
+            
+            # Bump version and build
+            poetry version patch
             NEW_VERSION=$(poetry version -s)
             echo "New version: $NEW_VERSION"
-            echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-            poetry build  # Add build step before publishing
+            poetry build
+            
+            # Commit changes
             git commit -am "Bump version to $NEW_VERSION"
-            git tag $NEW_VERSION
+            
+            # Push branch and create PR
+            git push origin HEAD
+            
+            # Create Pull Request
+            gh pr create --title "Bump version to $NEW_VERSION" \
+                        --body "Automated version bump to $NEW_VERSION" \
+                        --label "version-bump"
+            
+            # Publish to PyPI
             poetry publish -u "__token__" -p "$PYPI_TOKEN"
-            git push --follow-tags
           else
             echo "No significant changes detected. Skipping version bump and release."
           fi
