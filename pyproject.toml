@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pecha-org-tools"
-version = "0.0.5"
+version = "0.0.6"
 description = "A package to help with data preparation for pecha.org"
 authors = [
     "Tsundue <tsundue@esukhia.org>",
