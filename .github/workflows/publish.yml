@@ -63,10 +63,9 @@ jobs:
             # Push branch and create PR
             git push origin HEAD
             
-            # Create Pull Request
+            # Create Pull Request without label
             gh pr create --title "Bump version to $NEW_VERSION" \
-                        --body "Automated version bump to $NEW_VERSION" \
-                        --label "version-bump"
+                        --body "Automated version bump to $NEW_VERSION"
             
             # Publish to PyPI
             poetry publish -u "__token__" -p "$PYPI_TOKEN"
