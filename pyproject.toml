@@ -1,15 +1,11 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "pecha_org_tools"
+[tool.poetry]
+name = "pecha-org-tools"
 version = "0.0.1"
+description = "A package to help with data preparation for pecha.org"
 authors = [
     { name = "Tsundue", email = "tsundue@esukhia.org" },
     { name = "Tashi Tsering", email = "tashitsering@esukhia.org" }
 ]
-description = "A package to help with data preparation for pecha.org"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -17,21 +13,19 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
 dependencies = [
   "openpyxl >= 3.1.5",
   "urllib3 >= 2.2.3",
   "anthropic == 0.40.0"
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pytest-cov",
-    "pre-commit",
-]
+[tool.poetry.group.dev.dependencies]
+    pytest = "^7.1" # Example.  Add others.
 
+[build-system] #Poetry needs this
+    requires = ["poetry-core>=1.0.0"]
+    build-backend = "poetry.core.masonry.api"
 
-[project.urls]
+[tool.poetry.urls]
 "Homepage" = "https://github.com/OpenPecha/openpecha-project-template"
 "Bug Tracker" = "https://github.com/OpenPecha/openpecha-project-template/issues"
