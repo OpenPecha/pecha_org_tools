@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pecha-org-tools"
-version = "0.0.2"
+version = "0.0.3"
 description = "A package to help with data preparation for pecha.org"
 authors = [
     "Tsundue <tsundue@esukhia.org>",
@@ -33,7 +33,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.2"
+version = "0.0.3"
 version_files = [
     "pyproject.toml:version"
 ]
